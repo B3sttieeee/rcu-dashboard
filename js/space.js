@@ -1,11 +1,14 @@
 document.addEventListener("DOMContentLoaded", () => {
     const canvas = document.getElementById('space-canvas');
     if (!canvas) return;
-    
     const ctx = canvas.getContext('2d');
+    
     let width, height;
-    let stars = [];
-    const numStars = 800; // Ilość gwiazd 3D
+    let particles = [];
+    const numParticles = 3500; // Liczba cząsteczek w dysku akrecyjnym
+    
+    const eventHorizonRadius = 100; // Wielkość czarnej dziury
+    const diskRadius = 400; // Rozmiar rozbłysku
 
     function resize() {
         width = window.innerWidth;
@@ -14,64 +17,117 @@ document.addEventListener("DOMContentLoaded", () => {
         canvas.height = height;
     }
 
-    class Star {
+    // Klasa pojedynczej cząsteczki światła w dysku
+    class DiskParticle {
         constructor() {
-            // Rozrzuć gwiazdy w przestrzeni X, Y, Z
-            this.x = (Math.random() - 0.5) * width * 2;
-            this.y = (Math.random() - 0.5) * height * 2;
-            this.z = Math.random() * width; // Oś Z odpowiada za głębię
+            this.angle = Math.random() * Math.PI * 2;
+            // Większe zagęszczenie blisko horyzontu zdarzeń (symulacja grawitacji)
+            const r = Math.pow(Math.random(), 2);
+            this.distance = eventHorizonRadius + 5 + (r * diskRadius);
             
-            // Losuj kolor: Biały, jasnoniebieski, lekko złoty
-            const r = Math.random();
-            this.color = r > 0.8 ? '#ffcc00' : (r > 0.5 ? '#00ccff' : '#ffffff');
+            // Im bliżej dziury, tym szybciej wiruje
+            this.speed = 15 / Math.pow(this.distance, 1.3);
+            this.size = Math.random() * 1.5 + 0.5;
+            
+            // Kolor zależny od odległości: gorący biały/żółty blisko środka, fiolet/czerwień na zewnątrz
+            const intensity = 1 - (this.distance - eventHorizonRadius) / diskRadius;
+            if (intensity > 0.8) this.color = '#ffffff';
+            else if (intensity > 0.5) this.color = '#ffcc00';
+            else if (intensity > 0.2) this.color = '#ff3366';
+            else this.color = '#6600cc';
         }
 
         update() {
-            this.z -= 1.5; // Prędkość lotu w naszą stronę
+            this.angle -= this.speed;
             
-            if (this.z <= 0) {
-                this.z = width;
-                this.x = (Math.random() - 0.5) * width * 2;
-                this.y = (Math.random() - 0.5) * height * 2;
-            }
-        }
-
-        draw() {
-            // Perspektywa (Rzutowanie 3D na 2D)
-            let sx = (this.x / this.z) * width + width / 2;
-            let sy = (this.y / this.z) * height + height / 2;
+            // Obliczanie pozycji X i Z (Z określa głębię obrazu)
+            this.x = Math.cos(this.angle) * this.distance;
+            this.z = Math.sin(this.angle) * this.distance;
             
-            // Gwiazda rośnie w miarę zbliżania się do ekranu
-            let r = (1 - this.z / width) * 2.5;
-
-            // Rysuj tylko, jeśli jest w kadrze
-            if (sx > 0 && sx < width && sy > 0 && sy < height) {
-                ctx.beginPath();
-                ctx.arc(sx, sy, r, 0, Math.PI * 2);
-                ctx.fillStyle = this.color;
-                ctx.fill();
-            }
+            // Spłaszczenie osi Y, by uzyskać efekt pochylenia (tilted view)
+            this.y = this.z * 0.25; 
         }
     }
 
     function init() {
         resize();
         window.addEventListener('resize', resize);
-        for (let i = 0; i < numStars; i++) stars.push(new Star());
+        particles = [];
+        for (let i = 0; i < numParticles; i++) {
+            particles.push(new DiskParticle());
+        }
         animate();
     }
 
     function animate() {
-        // Czyści płótno z efektem delikatnej smugi świetlnej za gwiazdą
-        ctx.fillStyle = 'rgba(1, 1, 3, 0.4)';
+        // Tło kosmosu (lekkie zmazywanie zostawia płynne smugi świetlne)
+        ctx.fillStyle = 'rgba(5, 5, 8, 0.3)';
         ctx.fillRect(0, 0, width, height);
 
-        stars.forEach(star => {
-            star.update();
-            star.draw();
-        });
+        const centerX = width / 2;
+        const centerY = height / 2; // Możesz odjąć np. 100, żeby przesunąć dziurę wyżej
+
+        // 1. Aktualizacja cząsteczek
+        particles.forEach(p => p.update());
+
+        // 2. Sortowanie po osi Z! KRYTYCZNE DLA REALIZMU!
+        // Dzięki temu cząsteczki "z tyłu" (z < 0) rysują się pierwsze
+        particles.sort((a, b) => a.z - b.z);
+
+        // 3. Rozdzielenie na tył i przód
+        const backParticles = particles.filter(p => p.z < 0);
+        const frontParticles = particles.filter(p => p.z >= 0);
+
+        // Rysowanie tyłu
+        drawParticles(backParticles, centerX, centerY);
+
+        // 4. Rysowanie idealnie czarnego Horyzontu Zdarzeń oraz potężnej "poświaty" w tle
+        ctx.save();
+        ctx.translate(centerX, centerY);
+        
+        // Poświata grawitacyjna za kulą
+        const glow = ctx.createRadialGradient(0, 0, eventHorizonRadius * 0.8, 0, 0, eventHorizonRadius * 2);
+        glow.addColorStop(0, 'rgba(0,0,0,1)');
+        glow.addColorStop(0.5, 'rgba(138, 43, 226, 0.4)');
+        glow.addColorStop(1, 'rgba(0,0,0,0)');
+        ctx.fillStyle = glow;
+        ctx.beginPath();
+        ctx.arc(0, 0, eventHorizonRadius * 2, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Absolutnie czarna sfera
+        ctx.beginPath();
+        ctx.arc(0, 0, eventHorizonRadius, 0, Math.PI * 2);
+        ctx.fillStyle = '#000000';
+        ctx.fill();
+        
+        // Cienka świetlna obwódka "photon ring" (pierścień fotonowy) na krawędzi
+        ctx.beginPath();
+        ctx.arc(0, 0, eventHorizonRadius, 0, Math.PI * 2);
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        
+        ctx.restore();
+
+        // 5. Rysowanie przodu (cząsteczki zakrywają czarną kulę)
+        drawParticles(frontParticles, centerX, centerY);
 
         requestAnimationFrame(animate);
+    }
+
+    function drawParticles(particleArray, cx, cy) {
+        particleArray.forEach(p => {
+            ctx.beginPath();
+            ctx.arc(cx + p.x, cy + p.y, p.size, 0, Math.PI * 2);
+            ctx.fillStyle = p.color;
+            // Dodanie rozmycia dla symulacji żarzącego się gazu
+            ctx.shadowBlur = 10;
+            ctx.shadowColor = p.color;
+            ctx.fill();
+        });
+        // Reset cieni dla wydajności
+        ctx.shadowBlur = 0; 
     }
 
     init();
