@@ -1,0 +1,157 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth; /* Płynne przewijanie do sekcji */
+}
+
+body {
+    background-color: #050505;
+    color: #fff;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Tło zostaje w miejscu podczas scrollowania */
+.space-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1;
+    background: radial-gradient(circle at center, #1b2735 0%, #050505 100%);
+}
+
+.black-hole {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 350px;
+    height: 350px;
+    background: #000;
+    border-radius: 50%;
+    box-shadow: 0 0 60px 20px rgba(138, 43, 226, 0.4), 
+                0 0 120px 40px rgba(75, 0, 130, 0.3),
+                inset 0 0 20px 5px rgba(255, 255, 255, 0.05);
+    animation: pulse 4s infinite alternate ease-in-out;
+}
+
+@keyframes pulse {
+    0% { box-shadow: 0 0 50px 15px rgba(138, 43, 226, 0.4), 0 0 100px 30px rgba(75, 0, 130, 0.3); }
+    100% { box-shadow: 0 0 80px 25px rgba(138, 43, 226, 0.6), 0 0 150px 50px rgba(75, 0, 130, 0.5); }
+}
+
+/* Gwiazdy generowane przez JS */
+.star {
+    position: absolute;
+    background-color: #fff;
+    border-radius: 50%;
+    animation: twinkle infinite alternate ease-in-out;
+}
+
+@keyframes twinkle {
+    0% { opacity: 0.2; transform: scale(0.8); }
+    100% { opacity: 1; transform: scale(1.2); box-shadow: 0 0 5px #fff; }
+}
+
+/* Menu nawigacji na górze */
+nav {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    padding: 20px;
+    background: rgba(5, 5, 5, 0.8);
+    backdrop-filter: blur(10px);
+    z-index: 10;
+    text-align: center;
+    border-bottom: 1px solid rgba(138, 43, 226, 0.3);
+}
+
+nav ul {
+    list-style: none;
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+}
+
+nav a {
+    color: #fff;
+    text-decoration: none;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    transition: color 0.3s;
+}
+
+nav a:hover {
+    color: #8a2be2;
+}
+
+/* Układ główny i sekcje */
+main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 80px; /* Miejsce na pasek nawigacji */
+}
+
+section {
+    min-height: 100vh; /* Każda sekcja zajmuje minimum cały ekran */
+    width: 100%;
+    max-width: 800px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+/* Styl szklanych paneli (zmieniony z .content na .glass-panel) */
+.glass-panel {
+    text-align: center;
+    padding: 50px;
+    margin: 20px;
+    background: rgba(10, 10, 15, 0.6);
+    border-radius: 20px;
+    border: 1px solid rgba(138, 43, 226, 0.3);
+    backdrop-filter: blur(8px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+}
+
+h1, h2 {
+    margin-bottom: 20px;
+    text-shadow: 0 0 15px rgba(138, 43, 226, 0.8);
+}
+
+h1 { font-size: 3rem; }
+h2 { font-size: 2.2rem; }
+
+p {
+    font-size: 1.2rem;
+    color: #b3b3b3;
+    line-height: 1.6;
+}
+
+.btn {
+    display: inline-block;
+    padding: 12px 25px;
+    margin-top: 20px;
+    color: #fff;
+    text-decoration: none;
+    border: 2px solid #8a2be2;
+    border-radius: 30px;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+.btn:hover {
+    background-color: #8a2be2;
+    box-shadow: 0 0 20px #8a2be2;
+    transform: translateY(-2px);
+}
