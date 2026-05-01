@@ -10,50 +10,62 @@
     <!-- Nieruchome tło wszechświata -->
     <div class="space-background">
         <div class="black-hole"></div>
-        <div id="stars-container"></div> <!-- Tutaj JS wrzuci gwiazdy -->
+        <div id="stars-container"></div>
     </div>
 
     <!-- Pasek nawigacji -->
     <nav>
         <ul>
             <li><a href="#home">Start</a></li>
-            <li><a href="#about">O mnie</a></li>
+            <li><a href="#discord">Discord / Klan</a></li>
             <li><a href="#projects">Projekty</a></li>
-            <li><a href="#contact">Kontakt</a></li>
         </ul>
     </nav>
 
     <!-- Główna zawartość -->
     <main>
         <!-- Sekcja 1: Powitanie -->
-        <section id="home" class="glass-panel">
+        <section id="home" class="glass-panel fade-in">
             <h1>Witaj w moim Wszechświecie</h1>
             <p>Jestem programistą, a to moje międzygalaktyczne portfolio.</p>
         </section>
 
-        <!-- Sekcja 2: O mnie -->
-        <section id="about" class="glass-panel">
-            <h2>Kim jestem?</h2>
-            <p>Tutaj wrzucimy info o Twoich umiejętnościach, językach, w których kodujesz (np. Python, JS, C++). Może jakaś fajna historia o tym, jak zacząłeś programować?</p>
-        </section>
+        <!-- Sekcja 2: Discord i Klan (NOWA SEKCJA) -->
+        <section id="discord" class="glass-panel fade-in">
+            <h2>Łączność i Ekipa</h2>
+            <p>Znajdziesz mnie na Discordzie. Gram też w świetnej ekipie!</p>
+            
+            <div class="cards-container">
+                <!-- Karta Prywatnego Discorda -->
+                <div class="info-card">
+                    <img src="https://i.imgur.com/2MMBNwp.png" alt="Profilowe" class="avatar float-anim">
+                    <h3>Mój Discord</h3>
+                    <div class="discord-nick">
+                        <span>Nick:</span> <strong>fiflacz3k.</strong>
+                    </div>
+                </div>
 
-        <!-- Sekcja 3: Projekty -->
-        <section id="projects" class="glass-panel">
-            <h2>Czarna dziura moich projektów</h2>
-            <p>Tutaj podepniemy repozytoria z GitHuba w formie ładnych kart.</p>
-            <div class="links">
-                <a href="https://github.com/TWÓJ_NICK" target="_blank" class="btn">Mój GitHub</a>
+                <!-- Karta Klanu VYRN -->
+                <div class="info-card">
+                    <img src="https://i.imgur.com/3s8lOVM.png" alt="VYRN Logo" class="avatar float-anim-delayed">
+                    <h3>Klan: VYRN</h3>
+                    <p class="clan-desc">Wbijaj do nas na serwer!</p>
+                    <a href="https://discord.gg/vVvPcs84sz" target="_blank" class="btn pulse-btn">Dołącz do VYRN</a>
+                </div>
             </div>
         </section>
 
-        <!-- Sekcja 4: Kontakt -->
-        <section id="contact" class="glass-panel">
-            <h2>Nawiąż łączność</h2>
-            <p>Zostaw na siebie namiary: mail, LinkedIn, czy link do Discorda.</p>
+        <!-- Sekcja 3: Projekty -->
+        <section id="projects" class="glass-panel fade-in">
+            <h2>Czarna dziura moich projektów</h2>
+            <p>Sprawdź kod, który wrzucam w otchłań internetu.</p>
+            <div class="links">
+                <a href="https://github.com/B3sttieeee" target="_blank" class="btn">Mój GitHub</a>
+            </div>
         </section>
     </main>
 
-    <!-- Podpinamy skrypt na końcu -->
+    <!-- Podpinamy skrypt z gwiazdami -->
     <script src="js/space.js"></script>
 </body>
 </html>
