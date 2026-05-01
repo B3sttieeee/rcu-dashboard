@@ -2,49 +2,38 @@
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <title>PUTT PARTY CLONE | B3sttieeee</title>
-    <link rel="stylesheet" href="css/style.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://unpkg.com/peerjs@1.3.1/dist/peerjs.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ALPHA 1v1 | Next-Gen Web Combat</title>
+    <link rel="stylesheet" href="./style.css">
 </head>
 <body>
-    <div id="canvas-container"></div>
+    <div id="app"></div>
 
+    <!-- UI LAYER -->
     <div id="ui">
-        <!-- TOP HUD (Odwzorowany ze screenów) -->
-        <div id="hud-top" class="hidden">
-            <div class="hud-item">HOLE <span id="val-hole">1</span></div>
-            <div class="hud-item">PAR <span id="val-par">3</span></div>
-            <div class="hud-item accent">STROKE <span id="val-stroke">0</span></div>
-            <div class="hud-item">TIMER <span id="val-timer">1:55</span></div>
+        <div class="crosshair"></div>
+        
+        <div id="stats">
+            <div class="hp-bar"><div id="hp-fill"></div></div>
+            <div class="ammo">30 / ∞</div>
         </div>
 
-        <!-- MENU GŁÓWNE -->
-        <div id="menu-main" class="panel">
-            <h1 class="logo-text">PUTT PARTY</h1>
-            <div class="btn-group">
-                <button onclick="Game.start()">GRAJ SOLO</button>
-                <button class="btn-secondary" onclick="Multi.initHost()">HOSTUJ POKÓJ</button>
-                <button class="btn-secondary" onclick="UI.showJoin()">DOŁĄCZ DO EKIPY</button>
+        <div id="inventory">
+            <div class="slot active" data-slot="1">1</div>
+            <div class="slot" data-slot="2">2</div>
+            <div class="slot" data-slot="3">3</div>
+            <div class="slot" data-slot="4">🔨</div>
+        </div>
+
+        <div id="overlay">
+            <div class="menu-card">
+                <h1>ALPHA 1V1</h1>
+                <button id="btn-start">WEJDŹ DO GRY</button>
+                <button id="btn-multi" class="btn-sec">MULTIPLAYER</button>
             </div>
-        </div>
-
-        <!-- JOIN MENU -->
-        <div id="menu-join" class="panel hidden">
-            <h3>WPISZ KOD LOBBY</h3>
-            <input type="text" id="join-id" placeholder="np. 892-abc">
-            <button onclick="Multi.join()">POŁĄCZ</button>
-            <button class="btn-back" onclick="location.reload()">POWRÓT</button>
-        </div>
-
-        <!-- POWER BAR (Wskaźnik siły uderzenia) -->
-        <div id="power-container" class="hidden">
-            <div id="power-fill"></div>
         </div>
     </div>
 
-    <script src="js/physics.js"></script>
-    <script src="js/multiplayer.js"></script>
-    <script src="js/main.js"></script>
+    <script type="module" src="./main.js"></script>
 </body>
 </html>
