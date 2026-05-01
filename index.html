@@ -3,45 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    
     <title>B3sttieeee | Wymiar Kodu</title>
     
-    <!-- Magiczny dopisek ?v=10 ominie pamięć podręczną przeglądarki! -->
-    <link rel="stylesheet" href="./css/style.css?v=10">
+    <!-- Brutalne ominięcie cache'u - na 100% pobierze nową wersję -->
+    <link rel="stylesheet" href="./css/style.css?v=999">
 </head>
 <body>
-    <!-- PERFEKCYJNY KOSMOS (TŁO) -->
+    <!-- ========================================== -->
+    <!-- PERFEKCYJNY KOSMOS (WARSTWA TŁA)           -->
+    <!-- ========================================== -->
     <div class="universe-bg">
-        <!-- Wirujące Gwiazdy -->
+        <!-- Generowane 3D Gwiazdy -->
         <canvas id="space-canvas"></canvas>
-        
-        <!-- Mgławice -->
+
+        <!-- Trójwymiarowe Planety -->
+        <div class="planet planet-earth"></div>
+        <div class="planet planet-mars"></div>
+
+        <!-- Mgławice (Kolorowy gaz) -->
         <div class="nebula nebula-1"></div>
         <div class="nebula nebula-2"></div>
-        
-        <!-- Czarna Dziura (Gargantua 3D) -->
-        <div class="black-hole-wrapper">
-            <div class="accretion-disk"></div>
-            <div class="black-hole"></div>
+        <div class="nebula nebula-3"></div>
+
+        <!-- Czarna Dziura (Wierność fizyczna / Interstellar style) -->
+        <div class="black-hole-system">
+            <!-- Poświata horyzontu zdarzeń -->
+            <div class="bh-glow"></div>
+            <!-- Tylna część dysku akrecyjnego -->
+            <div class="bh-disk-back"></div>
+            <!-- Pusta, czarna kula (Środek) -->
+            <div class="bh-center"></div>
+            <!-- Przednia część dysku akrecyjnego (Zachodzi na kulę) -->
+            <div class="bh-disk-front-wrapper">
+                <div class="bh-disk-front"></div>
+            </div>
         </div>
     </div>
 
-    <!-- Nawigacja -->
+    <!-- ========================================== -->
+    <!-- INTERFEJS UŻYTKOWNIKA                      -->
+    <!-- ========================================== -->
     <header>
         <nav>
             <div class="nav-content">
                 <div class="logo">B3STTIEEEE</div>
                 <ul>
-                    <li><a href="#home">Baza Główna</a></li>
-                    <li><a href="#discord">Łączność</a></li>
+                    <li><a href="#home">Start</a></li>
+                    <li><a href="#discord">Komunikacja</a></li>
                     <li><a href="#projects">Repozytoria</a></li>
                 </ul>
             </div>
         </nav>
     </header>
 
-    <!-- Treść Strony -->
     <main>
-        <!-- Sekcja: Baza Główna -->
         <section id="home">
             <div class="hero-content">
                 <h1>System Online.</h1>
@@ -50,7 +67,6 @@
             </div>
         </section>
 
-        <!-- Sekcja: Łączność -->
         <section id="discord">
             <div class="section-header">
                 <h2>Moduł Komunikacji</h2>
@@ -66,23 +82,22 @@
                 <article class="glass-card">
                     <img src="https://i.imgur.com/3s8lOVM.png" alt="Logo Klanu VYRN" class="avatar">
                     <h3>Jednostka: VYRN</h3>
-                    <p class="desc">Otwarty kanał wejściowy do bazy.</p>
+                    <p class="desc">Baza wypadowa ekipy. Otwarty kanał wejściowy.</p>
                     <a href="https://discord.gg/vVvPcs84sz" target="_blank" class="btn secondary-btn">Autoryzuj Dostęp</a>
                 </article>
             </div>
         </section>
 
-        <!-- Sekcja: Projekty -->
         <section id="projects">
             <article class="glass-panel">
                 <h2>Archiwum Danych</h2>
-                <p>Zbiór moich repozytoriów. Sprawdź mój kod rzucony w otchłań.</p>
+                <p>Sprawdź kod, który wrzuciłem w otchłań GitHuba.</p>
                 <a href="https://github.com/B3sttieeee" target="_blank" class="btn github-btn">Dostęp do GitHuba</a>
             </article>
         </section>
     </main>
 
-    <!-- Skrypt gwiazd -->
-    <script src="./js/space.js"></script>
+    <!-- Skrypt przestrzeni 3D -->
+    <script src="./js/space.js?v=999"></script>
 </body>
 </html>
