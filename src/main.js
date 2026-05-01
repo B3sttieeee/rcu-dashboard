@@ -3,7 +3,7 @@ import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
 
-// Importujemy Twoje moduły
+// Importujemy Twoje moduły - upewnij się, że pliki są w tym samym folderze!
 import { Player } from './Player.js';
 import { BuildSystem } from './BuildSystem.js';
 
@@ -12,24 +12,28 @@ class GameEngine {
         this.nodes = {
             app: document.getElementById('app'),
             overlay: document.getElementById('overlay'),
-            slotQ: document.getElementById('slot-q'),
-            slotE: document.getElementById('slot-e')
+            hp: document.getElementById('hp-fill'),
+            modeText: document.getElementById('current-mode')
         };
 
         this.clock = new THREE.Clock();
+        this.isStarted = false;
         
         this.init();
         this.addLights();
         this.addPostProcessing();
         
-        // Inicjalizacja Twoich systemów
+        // Inicjalizacja systemów
         this.player = new Player(this.camera, this.scene);
         this.buildSystem = new BuildSystem(this.scene, this.camera);
         
         this.createArena();
-        this.setupMenuLogic();
+        this.setupStartLogic();
         
         window.addEventListener('resize', () => this.onResize());
+        
+        // Odpalamy pętlę renderowania OD RAZU (nawet przed kliknięciem), 
+        // żeby nie było czarnego ekranu.
         this.render();
     }
 
@@ -39,9 +43,12 @@ class GameEngine {
         this.scene.fog = new THREE.FogExp2(0x020205, 0.0015);
 
         this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 5000);
-        this.camera.position.set(0, 1.7, 5);
+        this.camera.position.set(0, 1.7, 10); // Startowa pozycja kamery
 
-        this.renderer = new THREE.WebGLRenderer({ antialias: true });
+        this.renderer = new THREE.WebGLRenderer({ 
+            antialias: true,
+            powerPreference: "high-performance"
+        });
         this.renderer.setPixelRatio(window.devicePixelRatio);
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         this.renderer.toneMapping = THREE.ReinhardToneMapping;
@@ -54,26 +61,23 @@ class GameEngine {
         this.composer = new EffectComposer(this.renderer);
         this.composer.addPass(new RenderPass(this.scene, this.camera));
 
-        // Efekt BLOOM (Świecenie neonów)
         const bloomPass = new UnrealBloomPass(
             new THREE.Vector2(window.innerWidth, window.innerHeight),
-            1.5, // Siła świecenia
-            0.4, // Promień
-            0.85 // Próg (im niższy, tym więcej świeci)
+            1.5, 0.4, 0.85
         );
         this.composer.addPass(bloomPass);
     }
 
     addLights() {
-        this.scene.add(new THREE.AmbientLight(0x4040ff, 0.4));
-        const sun = new THREE.DirectionalLight(0xffffff, 1.2);
+        this.scene.add(new THREE.AmbientLight(0x4040ff, 0.5));
+        const sun = new THREE.DirectionalLight(0xffffff, 1.0);
         sun.position.set(100, 500, 100);
         sun.castShadow = true;
         this.scene.add(sun);
     }
 
     createArena() {
-        // Podłoga (Grid)
+        // Neonowa podłoga
         const grid = new THREE.GridHelper(2000, 100, 0x00f2ff, 0x0a0a20);
         this.scene.add(grid);
 
@@ -86,25 +90,19 @@ class GameEngine {
         this.scene.add(floor);
     }
 
-    setupMenuLogic() {
-        // Schowaj menu po zablokowaniu myszki
-        document.addEventListener('pointerlockchange', () => {
-            if (document.pointerLockElement) {
-                this.nodes.overlay.style.display = 'none';
-            } else {
-                this.nodes.overlay.style.display = 'flex';
-            }
+    setupStartLogic() {
+        // Kliknięcie w dowolne miejsce overlay'a startuje grę
+        this.nodes.overlay.addEventListener('click', () => {
+            this.nodes.app.requestPointerLock();
         });
 
-        // Wizualna zmiana aktywnych slotów
-        window.addEventListener('keydown', (e) => {
-            if (e.code === 'KeyQ') {
-                this.nodes.slotQ.classList.add('active');
-                this.nodes.slotE.classList.remove('active');
-            }
-            if (e.code === 'KeyE') {
-                this.nodes.slotE.classList.add('active');
-                this.nodes.slotQ.classList.remove('active');
+        document.addEventListener('pointerlockchange', () => {
+            if (document.pointerLockElement === this.nodes.app) {
+                this.isStarted = true;
+                this.nodes.overlay.style.display = 'none'; // Chowa menu
+            } else {
+                this.isStarted = false;
+                this.nodes.overlay.style.display = 'flex'; // Pokazuje menu
             }
         });
     }
@@ -121,14 +119,15 @@ class GameEngine {
 
         const delta = this.clock.getDelta();
         
-        // Aktualizacja modułów
-        this.player.update(delta);
-        this.buildSystem.update();
+        // Gracza i budowanie aktualizujemy tylko gdy myszka jest zablokowana (gra trwa)
+        if (this.isStarted) {
+            this.player.update(delta);
+            this.buildSystem.update();
+        }
 
-        // Renderowanie z efektami (Bloom)
         this.composer.render();
     }
 }
 
-// Odpalenie gry
+// Start silnika
 new GameEngine();
