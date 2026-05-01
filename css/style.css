@@ -5,7 +5,7 @@
 }
 
 html {
-    scroll-behavior: smooth; /* Płynne przewijanie do sekcji */
+    scroll-behavior: smooth;
 }
 
 body {
@@ -14,7 +14,7 @@ body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-/* Tło zostaje w miejscu podczas scrollowania */
+/* Tło i czarna dziura (bez zmian) */
 .space-background {
     position: fixed;
     top: 0;
@@ -37,15 +37,14 @@ body {
     box-shadow: 0 0 60px 20px rgba(138, 43, 226, 0.4), 
                 0 0 120px 40px rgba(75, 0, 130, 0.3),
                 inset 0 0 20px 5px rgba(255, 255, 255, 0.05);
-    animation: pulse 4s infinite alternate ease-in-out;
+    animation: pulse-hole 4s infinite alternate ease-in-out;
 }
 
-@keyframes pulse {
+@keyframes pulse-hole {
     0% { box-shadow: 0 0 50px 15px rgba(138, 43, 226, 0.4), 0 0 100px 30px rgba(75, 0, 130, 0.3); }
     100% { box-shadow: 0 0 80px 25px rgba(138, 43, 226, 0.6), 0 0 150px 50px rgba(75, 0, 130, 0.5); }
 }
 
-/* Gwiazdy generowane przez JS */
 .star {
     position: absolute;
     background-color: #fff;
@@ -58,7 +57,7 @@ body {
     100% { opacity: 1; transform: scale(1.2); box-shadow: 0 0 5px #fff; }
 }
 
-/* Menu nawigacji na górze */
+/* Menu nawigacji */
 nav {
     position: fixed;
     top: 0;
@@ -76,6 +75,7 @@ nav ul {
     display: flex;
     justify-content: center;
     gap: 30px;
+    flex-wrap: wrap; /* żeby menu nie psuło się na telefonach */
 }
 
 nav a {
@@ -84,25 +84,26 @@ nav a {
     font-weight: bold;
     text-transform: uppercase;
     letter-spacing: 2px;
-    transition: color 0.3s;
+    transition: color 0.3s, text-shadow 0.3s;
 }
 
 nav a:hover {
     color: #8a2be2;
+    text-shadow: 0 0 10px rgba(138, 43, 226, 0.8);
 }
 
-/* Układ główny i sekcje */
+/* Układ główny i panele */
 main {
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-top: 80px; /* Miejsce na pasek nawigacji */
+    margin-top: 80px;
 }
 
 section {
-    min-height: 100vh; /* Każda sekcja zajmuje minimum cały ekran */
+    min-height: 100vh;
     width: 100%;
-    max-width: 800px;
+    max-width: 900px;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -110,16 +111,21 @@ section {
     padding: 20px;
 }
 
-/* Styl szklanych paneli (zmieniony z .content na .glass-panel) */
 .glass-panel {
     text-align: center;
-    padding: 50px;
+    padding: 40px;
     margin: 20px;
     background: rgba(10, 10, 15, 0.6);
     border-radius: 20px;
     border: 1px solid rgba(138, 43, 226, 0.3);
-    backdrop-filter: blur(8px);
+    backdrop-filter: blur(10px);
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+    transition: transform 0.4s ease;
+}
+
+.glass-panel:hover {
+    transform: translateY(-5px);
+    border-color: rgba(138, 43, 226, 0.6);
 }
 
 h1, h2 {
@@ -129,17 +135,91 @@ h1, h2 {
 
 h1 { font-size: 3rem; }
 h2 { font-size: 2.2rem; }
+p { font-size: 1.2rem; color: #b3b3b3; line-height: 1.6; margin-bottom: 20px; }
 
-p {
-    font-size: 1.2rem;
-    color: #b3b3b3;
-    line-height: 1.6;
+/* KARTY DISCORD / KLAN */
+.cards-container {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin-top: 20px;
+    flex-wrap: wrap; /* Karty spadną pod siebie na wąskim ekranie */
 }
 
+.info-card {
+    background: rgba(20, 20, 30, 0.7);
+    border: 1px solid rgba(138, 43, 226, 0.4);
+    border-radius: 15px;
+    padding: 30px 20px;
+    width: 280px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+}
+
+.info-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 30px rgba(138, 43, 226, 0.3);
+    background: rgba(30, 30, 45, 0.8);
+}
+
+.info-card h3 {
+    margin: 15px 0 10px;
+    font-size: 1.4rem;
+    color: #fff;
+}
+
+.discord-nick {
+    background: rgba(0, 0, 0, 0.5);
+    padding: 10px 20px;
+    border-radius: 10px;
+    border: 1px dashed rgba(138, 43, 226, 0.5);
+    font-size: 1.1rem;
+    color: #e0e0e0;
+}
+
+.discord-nick strong {
+    color: #fff;
+    text-shadow: 0 0 8px rgba(138, 43, 226, 0.8);
+}
+
+.clan-desc {
+    font-size: 1rem;
+    margin-bottom: 15px;
+}
+
+/* Awatary i ich animacje */
+.avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #8a2be2;
+    box-shadow: 0 0 15px rgba(138, 43, 226, 0.6);
+}
+
+/* Efekt "lewitacji" w przestrzeni kosmicznej */
+.float-anim {
+    animation: floating 4s ease-in-out infinite;
+}
+
+.float-anim-delayed {
+    animation: floating 4s ease-in-out infinite 2s; /* Opóźnione, żeby nie ruszały się identycznie */
+}
+
+@keyframes floating {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-12px); box-shadow: 0 0 25px rgba(138, 43, 226, 0.9); }
+    100% { transform: translateY(0px); }
+}
+
+/* Przyciski */
 .btn {
     display: inline-block;
     padding: 12px 25px;
-    margin-top: 20px;
+    margin-top: 10px;
     color: #fff;
     text-decoration: none;
     border: 2px solid #8a2be2;
@@ -154,4 +234,25 @@ p {
     background-color: #8a2be2;
     box-shadow: 0 0 20px #8a2be2;
     transform: translateY(-2px);
+}
+
+/* Przycisk dołączania do klanu - pulsujący neon */
+.pulse-btn {
+    animation: neon-pulse 2s infinite;
+}
+
+@keyframes neon-pulse {
+    0% { box-shadow: 0 0 5px rgba(138, 43, 226, 0.4); }
+    50% { box-shadow: 0 0 20px rgba(138, 43, 226, 0.8); }
+    100% { box-shadow: 0 0 5px rgba(138, 43, 226, 0.4); }
+}
+
+/* Prosta animacja pojawiania się sekcji (Fade In) */
+.fade-in {
+    animation: fadeIn 1.5s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
 }
