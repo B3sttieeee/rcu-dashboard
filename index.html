@@ -3,79 +3,89 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>B3sttieeee | Space Portfolio</title>
-    <link rel="stylesheet" href="css/style.css">
+    <!-- Wymuszenie odświeżenia cache dla GitHuba (meta tagi) -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    
+    <title>B3sttieeee | Wymiar Kodu</title>
+    
+    <!-- Magiczne kropki przed ukośnikiem (./) - to ratuje GitHub Pages! -->
+    <link rel="stylesheet" href="./css/style.css">
 </head>
 <body>
-    <!-- Zaawansowane tło Canvas (obsługiwane przez JS) -->
+    <!-- Silnik przestrzeni 3D -->
     <canvas id="space-canvas"></canvas>
 
-    <!-- Nawigacja -->
-    <nav>
-        <div class="nav-content">
-            <div class="logo">B3STTIEEEE</div>
-            <ul>
-                <li><a href="#home">Start</a></li>
-                <li><a href="#discord">Ekipa</a></li>
-                <li><a href="#projects">Projekty</a></li>
-            </ul>
-        </div>
-    </nav>
+    <!-- Nawigacja główna -->
+    <header>
+        <nav>
+            <div class="nav-content">
+                <div class="logo">B3STTIEEEE</div>
+                <ul>
+                    <li><a href="#home">Baza Główna</a></li>
+                    <li><a href="#discord">Łączność</a></li>
+                    <li><a href="#projects">Horyzont Zdarzeń</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
 
-    <!-- Główna zawartość -->
+    <!-- Zawartość strony -->
     <main>
-        <!-- Sekcja 1: Start z Czarną Dziurą w tle -->
+        <!-- Sekcja: Baza Główna -->
         <section id="home" class="hero-section hidden">
             <div class="black-hole-container">
                 <div class="black-hole"></div>
             </div>
             <div class="hero-content">
-                <h1>Witaj w moim Wszechświecie</h1>
-                <p>Jestem Fiflak a to o mnie.</p>
-                <a href="#projects" class="btn primary-btn">Rozpocznij Podróż</a>
+                <h1>System Online.</h1>
+                <p>Jestem programistą. Eksploruję kod i tworzę własny wszechświat.</p>
+                <a href="#projects" class="btn primary-btn">Zainicjuj Podróż</a>
             </div>
         </section>
 
-        <!-- Sekcja 2: Discord i Klan -->
+        <!-- Sekcja: Łączność (Discord/Klan) -->
         <section id="discord" class="hidden">
             <div class="section-header">
-                <h2>Łączność i Ekipa</h2>
-                <p>Znajdziesz mnie na Discordzie. Gram też w świetnej ekipie!</p>
+                <h2>Moduł Komunikacji</h2>
+                <p>Nawiąż połączenie przez Discorda. Aktualnie operuję z jednostką VYRN.</p>
             </div>
             
             <div class="cards-container">
-                <!-- Karta Prywatnego Discorda -->
-                <div class="glass-card">
+                <!-- Karta: Discord -->
+                <article class="glass-card">
                     <div class="card-glow"></div>
-                    <img src="https://i.imgur.com/2MMBNwp.png" alt="Profilowe" class="avatar">
-                    <h3>Mój Discord</h3>
+                    <img src="https://i.imgur.com/2MMBNwp.png" alt="Awatar Profilowy" class="avatar">
+                    <h3>Prywatny Kanał</h3>
                     <div class="tag">@fiflacz3k.</div>
-                </div>
+                </article>
 
-                <!-- Karta Klanu VYRN -->
-                <div class="glass-card">
+                <!-- Karta: Klan -->
+                <article class="glass-card">
                     <div class="card-glow"></div>
-                    <img src="https://i.imgur.com/3s8lOVM.png" alt="VYRN Logo" class="avatar">
-                    <h3>Klan: VYRN</h3>
-                    <p class="desc">Dołącz do naszego klanu na serwerze!</p>
-                    <a href="https://discord.gg/vVvPcs84sz" target="_blank" class="btn secondary-btn">Wbijaj na Serwer</a>
-                </div>
+                    <img src="https://i.imgur.com/3s8lOVM.png" alt="Logo Klanu VYRN" class="avatar">
+                    <h3>Jednostka: VYRN</h3>
+                    <p class="desc">Baza wypadowa naszej ekipy. Otwarty kanał wejściowy.</p>
+                    <a href="https://discord.gg/vVvPcs84sz" target="_blank" rel="noopener noreferrer" class="btn secondary-btn">Autoryzuj Dostęp</a>
+                </article>
             </div>
         </section>
 
-        <!-- Sekcja 3: Projekty -->
+        <!-- Sekcja: Projekty -->
         <section id="projects" class="hidden">
-            <div class="glass-panel">
-                <h2>Horyzont Zdarzeń</h2>
-                <p>Sprawdź kod, który wrzucam w otchłań GitHuba.</p>
-                <a href="https://github.com/B3sttieeee" target="_blank" class="btn github-btn">
-                    <svg height="24" width="24" viewBox="0 0 16 16" fill="white"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path></svg>
-                    Moje Repozytoria
+            <article class="glass-panel">
+                <h2>Archiwum Danych (GitHub)</h2>
+                <p>Zbiór moich repozytoriów. Sprawdź, nad czym aktualnie pracuję w otchłani kodu.</p>
+                <a href="https://github.com/B3sttieeee" target="_blank" rel="noopener noreferrer" class="btn github-btn">
+                    <svg height="24" width="24" viewBox="0 0 16 16" fill="currentColor" style="margin-right: 8px;"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path></svg>
+                    Dostęp do Repozytoriów
                 </a>
-            </div>
+            </article>
         </section>
     </main>
 
-    <script src="js/space.js"></script>
+    <!-- Skrypty na samym końcu, z atrybutem defer -->
+    <script src="./js/space.js" defer></script>
 </body>
 </html>
