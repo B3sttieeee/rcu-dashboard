@@ -1,0 +1,101 @@
+:root {
+    --neon-green: #2ecc71;
+    --neon-purple: #a55eea;
+    --glass: rgba(15, 15, 25, 0.8);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+body { background: #000; overflow: hidden; color: #fff; }
+
+#canvas-container { position: fixed; top: 0; left: 0; z-index: 1; }
+
+#gui {
+    position: relative; z-index: 10;
+    width: 100vw; height: 100vh;
+    display: flex; justify-content: center; align-items: center;
+    pointer-events: none;
+}
+
+.panel {
+    background: var(--glass);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255,255,255,0.1);
+    padding: 50px;
+    border-radius: 30px;
+    text-align: center;
+    width: 400px;
+    pointer-events: auto;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+}
+
+.neon-text {
+    font-weight: 900;
+    font-size: 2.5rem;
+    letter-spacing: 5px;
+    color: #fff;
+    text-shadow: 0 0 20px var(--neon-green);
+    margin-bottom: 10px;
+}
+
+.id-badge {
+    background: #000;
+    padding: 15px;
+    border-radius: 10px;
+    color: var(--neon-green);
+    font-family: monospace;
+    font-size: 1.2rem;
+    margin: 20px 0;
+    border: 1px dashed var(--neon-green);
+}
+
+button {
+    width: 100%;
+    padding: 15px;
+    margin: 10px 0;
+    border: none;
+    border-radius: 12px;
+    background: var(--neon-green);
+    color: #000;
+    font-weight: 800;
+    cursor: pointer;
+    transition: 0.3s;
+    text-transform: uppercase;
+}
+
+button:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(46, 204, 113, 0.4); }
+.btn-alt { background: #fff; }
+.btn-back { background: #eb4d4b; color: #fff; }
+
+.hidden { display: none !important; }
+
+/* HUD */
+#hud {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+}
+
+.stats-box {
+    position: absolute; top: 30px; left: 30px;
+    background: var(--glass);
+    padding: 15px 30px;
+    border-radius: 15px;
+    display: flex; gap: 30px;
+    font-weight: 900;
+    letter-spacing: 1px;
+}
+
+.highlight { color: var(--neon-green); }
+
+#power-meter {
+    position: absolute; bottom: 50px; left: 50%;
+    transform: translateX(-50%);
+    width: 400px; height: 12px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+#power-fill {
+    width: 0%; height: 100%;
+    background: linear-gradient(90deg, var(--neon-green), #f1c40f, #e74c3c);
+    transition: width 0.05s;
+}
