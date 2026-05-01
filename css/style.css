@@ -1,11 +1,12 @@
-{ margin: 0; padding: 0; box-sizing: border-box; }
+/* --- RESET I BAZA --- */
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
 html { scroll-behavior: smooth; }
 
 body {
     background-color: #020204;
     color: #e2e8f0;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     overflow-x: hidden;
     line-height: 1.6;
 }
@@ -26,10 +27,9 @@ nav {
     position: fixed;
     top: 0;
     width: 100%;
-    background: rgba(2, 2, 4, 0.6);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    background: rgba(2, 2, 4, 0.8);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(138, 43, 226, 0.3);
     z-index: 100;
     padding: 15px 0;
 }
@@ -57,7 +57,7 @@ nav a {
     color: #a0aec0; text-decoration: none; font-size: 0.9rem;
     text-transform: uppercase; letter-spacing: 1px; transition: 0.3s;
 }
-nav a:hover { color: #fff; text-shadow: 0 0 10px rgba(138, 43, 226, 0.5); }
+nav a:hover { color: #fff; text-shadow: 0 0 10px rgba(138, 43, 226, 0.8); }
 
 /* --- UKŁAD GŁÓWNY --- */
 main {
@@ -80,11 +80,11 @@ section {
 }
 
 .section-header { text-align: center; margin-bottom: 50px; }
-h1 { font-size: 4rem; font-weight: 800; line-height: 1.1; margin-bottom: 20px; color: #fff; }
-h2 { font-size: 2.5rem; font-weight: 700; margin-bottom: 15px; color: #fff; }
+h1 { font-size: 3.5rem; font-weight: 800; line-height: 1.1; margin-bottom: 20px; color: #fff; text-shadow: 0 0 20px rgba(138, 43, 226, 0.8); }
+h2 { font-size: 2.5rem; font-weight: 700; margin-bottom: 15px; color: #fff; text-shadow: 0 0 15px rgba(138, 43, 226, 0.8); }
 p { font-size: 1.1rem; color: #94a3b8; max-width: 600px; margin: 0 auto; }
 
-/* --- CZARNA DZIURA (Tylko w sekcji Hero) --- */
+/* --- CZARNA DZIURA --- */
 .hero-section { position: relative; }
 
 .black-hole-container {
@@ -97,7 +97,7 @@ p { font-size: 1.1rem; color: #94a3b8; max-width: 600px; margin: 0 auto; }
 }
 
 .black-hole {
-    width: 400px; height: 400px;
+    width: 350px; height: 350px;
     background: #000;
     border-radius: 50%;
     box-shadow: 
@@ -108,37 +108,36 @@ p { font-size: 1.1rem; color: #94a3b8; max-width: 600px; margin: 0 auto; }
 }
 
 @keyframes hole-breathe {
-    0% { transform: scale(0.95); box-shadow: 0 0 50px 10px rgba(138, 43, 226, 0.4), 0 0 120px 30px rgba(25, 0, 50, 0.6), inset 0 0 20px 5px rgba(255, 255, 255, 0.05); }
-    100% { transform: scale(1.05); box-shadow: 0 0 80px 20px rgba(138, 43, 226, 0.7), 0 0 180px 60px rgba(25, 0, 50, 0.9), inset 0 0 30px 10px rgba(255, 255, 255, 0.15); }
+    0% { transform: scale(0.95); box-shadow: 0 0 50px 10px rgba(138, 43, 226, 0.4), 0 0 120px 30px rgba(25, 0, 50, 0.6); }
+    100% { transform: scale(1.05); box-shadow: 0 0 80px 20px rgba(138, 43, 226, 0.7), 0 0 180px 60px rgba(25, 0, 50, 0.9); }
 }
 
 .hero-content {
     text-align: center;
     z-index: 1;
-    background: rgba(0, 0, 0, 0.4);
+    background: rgba(0, 0, 0, 0.6);
     padding: 40px;
     border-radius: 20px;
-    backdrop-filter: blur(5px);
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(138, 43, 226, 0.3);
 }
 
-/* --- KARTY I PANELE (Prawdziwy Glassmorphism) --- */
+/* --- KARTY I PANELE --- */
 .cards-container {
     display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; width: 100%;
 }
 
 .glass-card, .glass-panel {
-    background: rgba(20, 20, 35, 0.4);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
+    background: rgba(20, 20, 35, 0.6);
+    border: 1px solid rgba(138, 43, 226, 0.3);
+    backdrop-filter: blur(12px);
     border-radius: 24px;
     padding: 40px 30px;
     text-align: center;
     position: relative;
     overflow: hidden;
     transition: transform 0.3s ease, border-color 0.3s ease;
-    box-shadow: 0 30px 50px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
 }
 
 .glass-card { width: 320px; }
@@ -146,10 +145,10 @@ p { font-size: 1.1rem; color: #94a3b8; max-width: 600px; margin: 0 auto; }
 
 .glass-card:hover, .glass-panel:hover {
     transform: translateY(-8px);
-    border-color: rgba(138, 43, 226, 0.4);
+    border-color: rgba(138, 43, 226, 0.8);
 }
 
-/* Subtelny blask za kartą */
+/* Blask kart */
 .card-glow {
     position: absolute; width: 150px; height: 150px;
     background: rgba(138, 43, 226, 0.3);
@@ -157,49 +156,37 @@ p { font-size: 1.1rem; color: #94a3b8; max-width: 600px; margin: 0 auto; }
     top: -50px; right: -50px; z-index: -1;
     transition: 0.3s;
 }
-.glass-card:hover .card-glow { background: rgba(138, 43, 226, 0.5); }
+.glass-card:hover .card-glow { background: rgba(138, 43, 226, 0.6); }
 
-/* --- AWATARY (Zablokowany rozmiar) --- */
+/* --- AWATARY --- */
 .avatar {
     width: 110px !important;
     height: 110px !important;
     border-radius: 50% !important;
     object-fit: cover !important;
-    border: 2px solid rgba(255, 255, 255, 0.1);
+    border: 3px solid #8a2be2;
     margin-bottom: 20px;
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
-    background-color: #111; /* Fallback jak zdjęcie się ładuje */
+    box-shadow: 0 0 20px rgba(138, 43, 226, 0.6);
+    display: inline-block;
 }
 
-.glass-card h3 { font-size: 1.4rem; margin-bottom: 10px; color: #f8fafc; }
-.tag { display: inline-block; background: rgba(138, 43, 226, 0.15); color: #c084fc; padding: 6px 14px; border-radius: 20px; font-size: 0.9rem; border: 1px solid rgba(138, 43, 226, 0.3); }
-.desc { font-size: 0.95rem; margin-bottom: 25px; }
+.glass-card h3 { font-size: 1.4rem; margin-bottom: 10px; color: #fff; }
+.tag { display: inline-block; background: rgba(138, 43, 226, 0.2); color: #fff; padding: 6px 14px; border-radius: 20px; font-size: 0.9rem; border: 1px solid rgba(138, 43, 226, 0.5); font-weight: bold; }
+.desc { font-size: 0.95rem; margin-bottom: 25px; color: #ccc; }
 
 /* --- PRZYCISKI --- */
 .btn {
-    display: inline-flex; align-items: center; justify-content: center; gap: 10px;
-    padding: 14px 28px; border-radius: 30px; font-weight: 600; font-size: 0.95rem;
+    display: inline-block;
+    padding: 14px 28px; border-radius: 30px; font-weight: bold; font-size: 0.95rem;
     text-decoration: none; transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 1px;
-    cursor: pointer; margin-top: 15px; border: none;
+    margin-top: 15px; border: 2px solid transparent;
 }
 
-.primary-btn { background: #8a2be2; color: #fff; box-shadow: 0 0 20px rgba(138, 43, 226, 0.4); }
-.primary-btn:hover { background: #9d4edd; box-shadow: 0 0 30px rgba(138, 43, 226, 0.7); transform: translateY(-2px); }
+.primary-btn { background: #8a2be2; color: #fff; box-shadow: 0 0 20px rgba(138, 43, 226, 0.6); }
+.primary-btn:hover { background: transparent; border-color: #8a2be2; box-shadow: 0 0 30px rgba(138, 43, 226, 0.9); transform: translateY(-2px); }
 
-.secondary-btn { background: rgba(255, 255, 255, 0.05); color: #fff; border: 1px solid rgba(255, 255, 255, 0.2); }
-.secondary-btn:hover { background: rgba(255, 255, 255, 0.1); border-color: #fff; transform: translateY(-2px); }
+.secondary-btn { background: transparent; color: #fff; border-color: #8a2be2; }
+.secondary-btn:hover { background: #8a2be2; box-shadow: 0 0 20px rgba(138, 43, 226, 0.6); transform: translateY(-2px); }
 
 .github-btn { background: #fff; color: #000; }
-.github-btn:hover { background: #e2e8f0; transform: translateY(-2px); box-shadow: 0 10px 20px rgba(255, 255, 255, 0.2); }
-
-/* --- ANIMACJE (Pojawianie się przy scrollowaniu) --- */
-.hidden { opacity: 0; transform: translateY(40px); transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
-.show { opacity: 1; transform: translateY(0); }
-
-/* Responsywność */
-@media (max-width: 768px) {
-    h1 { font-size: 2.5rem; }
-    .black-hole { width: 250px; height: 250px; }
-    nav ul { gap: 15px; }
-    .glass-panel { padding: 40px 20px; }
-}
+.github-btn:hover { background: #e2e8f0; transform: translateY(-2px); box-shadow: 0 0 20px rgba(255, 255, 255, 0.6); }
