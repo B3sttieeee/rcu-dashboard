@@ -3,184 +3,362 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>B3sttieeee | Event Horizon ULTRA</title>
+    <title>Mini Golf Online - Graj ze Znajomymi</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background: #000; color: #fff; font-family: 'Inter', sans-serif; overflow: hidden; }
-        #canvas-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
-        
-        /* UI - Minimalistyczna kapsuła na dole */
-        main { position: absolute; bottom: 30px; width: 100%; display: flex; justify-content: center; z-index: 10; pointer-events: none; }
-        .hero-content { 
-            text-align: center; background: rgba(0,0,0,0.4); padding: 20px 50px; border-radius: 50px; 
-            backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.1); pointer-events: auto;
+        /* --- CSS STYLIZACJA --- */
+        :root {
+            --bg-color: #1a1a2e;
+            --fairway-green: #2ecc71;
+            --green-hover: #27ae60;
+            --text-color: #ecf0f1;
+            --accent-color: #e74c3c; /* Kolor flagi/dołka */
+            --ui-bg: rgba(0, 0, 0, 0.7);
+            --font-main: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-        h1 { font-size: 1.2rem; letter-spacing: 3px; font-weight: 900; color: #ffaa00; }
-        .btn { color: #fff; text-decoration: none; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; opacity: 0.6; transition: 0.3s; }
-        .btn:hover { opacity: 1; text-shadow: 0 0 10px #fff; }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            height: 100vh;
+            overflow: hidden; /* Gra wypełnia ekran */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Ekran gry (Canvas) */
+        #gameCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #34495e; /* Kolor tła ładowania */
+            z-index: 1;
+        }
+
+        /* Warstwa UI (Interfejsu) */
+        #ui-layer {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            pointer-events: none; /* UI przepuszcza kliki, chyba że element jest aktywny */
+        }
+
+        .screen {
+            background-color: var(--ui-bg);
+            padding: 40px;
+            border-radius: 20px;
+            border: 2px solid var(--fairway-green);
+            text-align: center;
+            backdrop-filter: blur(5px);
+            pointer-events: auto; /* Elementy wewnątrz ekranów reagują na kliki */
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 0 20px rgba(0,255,0,0.2);
+        }
+
+        .hidden { display: none !important; }
+
+        h1 { font-size: 3rem; margin-bottom: 20px; color: var(--fairway-green); text-transform: uppercase; letter-spacing: 3px; }
+        h2 { font-size: 1.5rem; margin-bottom: 15px; color: #fff; }
+        p { margin-bottom: 20px; color: #ccc; }
+
+        /* Przyciski */
+        .btn-container { display: flex; flex-direction: column; gap: 15px; }
+        
+        button {
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+        }
+
+        .btn-primary { background-color: var(--fairway-green); color: #000; }
+        .btn-primary:hover { background-color: var(--green-hover); transform: scale(1.05); }
+
+        .btn-secondary { background-color: transparent; border: 2px solid var(--text-color); color: var(--text-color); }
+        .btn-secondary:hover { background-color: rgba(255,255,255,0.1); }
+
+        .btn-danger { background-color: var(--accent-color); color: white; }
+
+        /* Siatka poziomów trudności */
+        .difficulty-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .diff-btn { font-size: 1rem; padding: 10px; }
+        .diff-btn.active { background-color: var(--fairway-green); color: black; border-color: var(--fairway-green); }
+
+        /* Inputy dla Multiplayer */
+        input {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 10px;
+            border: 1px solid #555;
+            background: rgba(255,255,255,0.1);
+            color: white;
+            font-size: 1rem;
+        }
+
+        /* HUD w trakcie gry */
+        #game-hud {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            pointer-events: none;
+            display: flex;
+            gap: 20px;
+            font-weight: bold;
+            font-size: 1.2rem;
+            text-shadow: 0 0 5px #000;
+        }
+        .hud-item { background: rgba(0,0,0,0.5); padding: 5px 15px; border-radius: 10px; }
+        #exit-game-btn { position: absolute; top: 20px; right: 20px; pointer-events: auto; padding: 10px 20px; font-size: 1rem; }
+
     </style>
 </head>
 <body>
 
-    <div id="canvas-container"></div>
+    <!-- KANWAS GRY - Tutaj silnik JS będzie rysował golfa -->
+    <canvas id="gameCanvas"></canvas>
 
-    <main>
-        <div class="hero-content">
-            <h1>SYSTEM ONLINE</h1>
-            <a href="https://github.com/B3sttieeee" class="btn">Archiwum GitHuba</a>
+    <!-- HUD W TRAKCIE GRY (Domyślnie ukryty) -->
+    <div id="game-hud" class="hidden">
+        <div class="hud-item">Dołek: <span id="hud-hole">1</span></div>
+        <div class="hud-item">Uderzeń: <span id="hud-strokes">0</span></div>
+        <div class="hud-item">Par: <span id="hud-par">3</span></div>
+        <div class="hud-item hidden" id="hud-status">Czekam na graczy...</div>
+    </div>
+    <button id="exit-game-btn" class="btn-danger hidden">Wyjdź</button>
+
+    <!-- WARSTWA UI INTERFEJSU -->
+    <div id="ui-layer">
+
+        <!-- 1. MENU GŁÓWNE -->
+        <div id="screen-main" class="screen">
+            <h1>MINI GOLF</h1>
+            <h2>ONLINE</h2>
+            <p>Witaj w klubie. Wybierz tryb gry.</p>
+            <div class="btn-container">
+                <button class="btn-primary" onclick="showScreen('screen-single')">Gra Pojedyncza</button>
+                <button class="btn-secondary" onclick="showScreen('screen-multi-lobby')">Graj ze Znajomymi (Online)</button>
+                <button class="btn-secondary" onclick="alert('Ustawienia w budowie!')">Ustawienia</button>
+            </div>
         </div>
-    </main>
 
-    <script type="module">
-        import * as THREE from 'https://cdn.skypack.dev/three@0.132.2';
+        <!-- 2. SEKCJA: GRA POJEDYNCZA (Wybór Trudności) -->
+        <div id="screen-single" class="screen hidden">
+            <h2>Wybierz Poziom</h2>
+            <div class="difficulty-grid">
+                <button class="btn-secondary diff-btn active" onclick="selectDifficulty(this, 'easy')">Łatwy</button>
+                <button class="btn-secondary diff-btn" onclick="selectDifficulty(this, 'medium')">Średni</button>
+                <button class="btn-secondary diff-btn" onclick="selectDifficulty(this, 'hard')">Trudny</button>
+            </div>
+            <p>Poziom wpływa na ukształtowanie terenu i siłę wiatru.</p>
+            <div class="btn-container">
+                <button class="btn-primary" onclick="startSinglePlayer()">Zacznij Grę</button>
+                <button class="btn-secondary" onclick="showScreen('screen-main')">Powrót</button>
+            </div>
+        </div>
 
-        let scene, camera, renderer, disk, stars, suns = [];
-
-        // Tworzenie "miękkiej" tekstury dla cząsteczek plazmy
-        function createSoftTexture() {
-            const canvas = document.createElement('canvas');
-            canvas.width = 64; canvas.height = 64;
-            const ctx = canvas.getContext('2d');
-            const grad = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
-            grad.addColorStop(0, 'rgba(255,255,255,1)');
-            grad.addColorStop(0.3, 'rgba(255,255,255,0.3)');
-            grad.addColorStop(1, 'rgba(255,255,255,0)');
-            ctx.fillStyle = grad;
-            ctx.fillRect(0, 0, 64, 64);
-            return new THREE.CanvasTexture(canvas);
-        }
-
-        function init() {
-            scene = new THREE.Scene();
-            camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 20000);
-            camera.position.set(0, 250, 700);
-
-            renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-            document.getElementById('canvas-container').appendChild(renderer.domElement);
-
-            // 1. CZARNA DZIURA
-            const bhGeo = new THREE.SphereGeometry(100, 64, 64);
-            const bhMat = new THREE.MeshBasicMaterial({ color: 0x000000 });
-            const blackHole = new THREE.Mesh(bhGeo, bhMat);
-            scene.add(blackHole);
-
-            // 2. ULTRA DYSK AKRECYJNY (60 000 cząsteczek)
-            const count = 60000;
-            const diskGeo = new THREE.BufferGeometry();
-            const positions = [];
-            const colors = [];
-            const sizes = [];
-            const color = new THREE.Color();
-
-            for (let i = 0; i < count; i++) {
-                const r = Math.random() * 500 + 110;
-                const theta = Math.random() * Math.PI * 2;
-                
-                // Matematyczne wygięcie grawitacyjne (Interstellar Warp)
-                const x = r * Math.cos(theta);
-                const z = r * Math.sin(theta);
-                const y = (Math.sin(r * 0.008) * 80) * Math.cos(theta * 0.5) + (Math.random() - 0.5) * 12;
-
-                positions.push(x, y, z);
-
-                // Gradacja kolorów ognia
-                const dist = (r - 110) / 500;
-                if (dist < 0.15) color.setHex(0xffffff); // Jądro
-                else if (dist < 0.5) color.setHex(0xffaa00); // Złoto
-                else if (dist < 0.8) color.setHex(0xff4400); // Ogień
-                else color.setHex(0x441100); // Ciemny żar
-                
-                colors.push(color.r, color.g, color.b);
-                sizes.push(Math.random() * 8 + 3);
-            }
-
-            diskGeo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
-            diskGeo.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
-            diskGeo.setAttribute('size', new THREE.Float32BufferAttribute(sizes, 1));
-
-            const diskMat = new THREE.PointsMaterial({
-                size: 5,
-                map: createSoftTexture(),
-                vertexColors: true,
-                transparent: true,
-                opacity: 0.8,
-                blending: THREE.AdditiveBlending, // Nakładanie kolorów (świetlistość)
-                depthWrite: false // Zapobiega "szparom" i błędom głębi
-            });
-
-            disk = new THREE.Points(diskGeo, diskMat);
-            scene.add(disk);
-
-            // 3. OLBRZYMY (System słońc w oddali)
-            const sunsData = [
-                { color: 0x66aaff, size: 400, pos: [2000, 500, -2000] }, // Syriusz (Błękitny)
-                { color: 0xff4400, size: 600, pos: [-3000, -200, -1000] }, // Betelgeza (Czerwony)
-                { color: 0xffffff, size: 150, pos: [1000, -1000, 1500] }  // Biały karzeł
-            ];
-
-            sunsData.forEach(data => {
-                const sMat = new THREE.SpriteMaterial({
-                    map: createSoftTexture(),
-                    color: data.color,
-                    blending: THREE.AdditiveBlending,
-                    transparent: true,
-                    opacity: 0.9
-                });
-                const sprite = new THREE.Sprite(sMat);
-                sprite.position.set(...data.pos);
-                sprite.scale.set(data.size, data.size, 1);
-                scene.add(sprite);
-                suns.push(sprite);
-            });
-
-            // 4. GWIAZDY TŁA (15 000 punktów)
-            const sGeo = new THREE.BufferGeometry();
-            const sPos = [];
-            for (let i = 0; i < 15000; i++) {
-                sPos.push((Math.random() - 0.5) * 10000, (Math.random() - 0.5) * 10000, (Math.random() - 0.5) * 10000);
-            }
-            sGeo.setAttribute('position', new THREE.Float32BufferAttribute(sPos, 3));
-            stars = new THREE.Points(sGeo, new THREE.PointsMaterial({ color: 0xffffff, size: 1.5, transparent: true, opacity: 0.4 }));
-            scene.add(stars);
-
-            animate();
-        }
-
-        let mouseX = 0, mouseY = 0;
-        window.addEventListener('mousemove', (e) => {
-            mouseX = (e.clientX - window.innerWidth / 2) * 0.2;
-            mouseY = (e.clientY - window.innerHeight / 2) * 0.2;
-        });
-
-        function animate() {
-            requestAnimationFrame(animate);
-            const time = Date.now() * 0.0005;
-
-            disk.rotation.y += 0.005;
+        <!-- 3. SEKCJA: MULTIPLAYER LOBBY -->
+        <div id="screen-multi-lobby" class="screen hidden">
+            <h2>Lobby Online</h2>
+            <p>Stwórz pokój lub dołącz do istniejącego.</p>
             
-            // Pulsowanie olbrzymów
-            suns.forEach((sun, i) => {
-                const pulse = 1 + Math.sin(time * 2 + i) * 0.1;
-                sun.scale.set(pulse * (i===1 ? 600 : 300), pulse * (i===1 ? 600 : 300), 1);
-            });
+            <input type="text" id="player-name" placeholder="Twoje imię (np. Golfiarz99)">
+            <input type="text" id="room-code" placeholder="Kod pokoju (np. GOLF123)">
 
-            // Płynna kamera 3D
-            camera.position.x += (mouseX - camera.position.x) * 0.05;
-            camera.position.y += (-mouseY + 250 - camera.position.y) * 0.05;
-            camera.lookAt(0, 0, 0);
+            <div class="btn-container">
+                <button class="btn-primary" onclick="createRoom()">Stwórz Pokój</button>
+                <button class="btn-secondary" onclick="joinRoom()">Dołącz do Gry</button>
+                <button class="btn-secondary" onclick="showScreen('screen-main')">Powrót</button>
+            </div>
+        </div>
 
-            renderer.render(scene, camera);
+        <!-- 4. SEKCJA: OCZEKIWANIE NA GRACZY (Multiplayer) -->
+        <div id="screen-multi-wait" class="screen hidden">
+            <h2>Pokój: <span id="current-room-code">---</span></h2>
+            <p>Udostępnij kod znajomym. Czekamy na resztę składu.</p>
+            
+            <div id="player-list" style="margin-bottom: 20px; text-align: left;">
+                <!-- Tu JS będzie dopisywał graczy -->
+                <div>• Ty (Lider)</div>
+            </div>
+
+            <div class="btn-container">
+                <!-- Tylko lider może zacząć -->
+                <button class="btn-primary" onclick="startMultiGame()">Start Gry</button> 
+                <button class="btn-danger" onclick="leaveLobby()">Wyjdź</button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- --- JAVASCRIPT LOGIKA --- -->
+    <script>
+        // -- Konfiguracja i Zmienne Globalne --
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        let selectedDifficulty = 'easy';
+        let isGameRunning = false;
+        let isMultiplayer = false;
+
+        // Dopasowanie kanwasa do okna
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            if(isGameRunning) drawGamePlaceholder(); // Przerysuj jeśli gra działa
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        // -- Nawigacja między ekranami --
+        function showScreen(screenId) {
+            // Ukryj wszystkie ekrany
+            document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+            // Pokaż wybrany
+            document.getElementById(screenId).classList.remove('hidden');
         }
 
-        window.addEventListener('resize', () => {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
+        // Exit Game logic
+        document.getElementById('exit-game-btn').addEventListener('click', () => {
+            isGameRunning = false;
+            document.getElementById('game-hud').classList.add('hidden');
+            document.getElementById('exit-game-btn').classList.add('hidden');
+            document.getElementById('ui-layer').classList.remove('hidden');
+            showScreen('screen-main');
         });
 
-        init();
+        // -- Logika Gry Pojedynczej --
+        function selectDifficulty(btn, diff) {
+            document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            selectedDifficulty = diff;
+        }
+
+        function startSinglePlayer() {
+            console.log("Start singleplayer. Poziom:", selectedDifficulty);
+            isMultiplayer = false;
+            initGameEngine();
+        }
+
+        // -- Logika Multiplayer (Placeholdery) --
+        // Wymaga backendu (np. Node.js + Socket.io)
+        function createRoom() {
+            const name = document.getElementById('player-name').value;
+            const room = document.getElementById('room-code').value;
+            if(!name || !room) return alert("Podaj imię i kod pokoju!");
+
+            console.log(`Tworzenie pokoju: ${room} dla gracza: ${name}`);
+            document.getElementById('current-room-code').innerText = room;
+            // Tutaj: wyślij zapytanie do serwera przez WebSocket
+            showScreen('screen-multi-wait');
+        }
+
+        function joinRoom() {
+            const name = document.getElementById('player-name').value;
+            const room = document.getElementById('room-code').value;
+            if(!name || !room) return alert("Podaj imię i kod pokoju!");
+
+            console.log(`Dołączanie do pokoju: ${room} jako: ${name}`);
+            // Tutaj: wyślij zapytanie do serwera przez WebSocket
+            // Jeśli serwer potwierdzi:
+            document.getElementById('current-room-code').innerText = room;
+            showScreen('screen-multi-wait');
+        }
+
+        function leaveLobby() {
+            console.log("Opuszczanie lobby");
+            // Tutaj: poinformuj serwer o wyjściu
+            showScreen('screen-multi-lobby');
+        }
+
+        function startMultiGame() {
+            console.log("Start gry multiplayer!");
+            isMultiplayer = true;
+            // Tutaj: Lider wysyła sygnał startu do serwera
+            initGameEngine();
+        }
+
+        // --- SILNIK GRY (PLACEHOLDER) ---
+        // Tutaj w przyszłości znajdzie się logika fizyki, uderzania i renderowania.
+        function initGameEngine() {
+            isGameRunning = true;
+            
+            // Ukryj UI, pokaż HUD gry
+            document.getElementById('ui-layer').classList.add('hidden');
+            document.getElementById('game-hud').classList.remove('hidden');
+            document.getElementById('exit-game-btn').classList.remove('hidden');
+
+            if(isMultiplayer) {
+                document.getElementById('hud-status').classList.remove('hidden');
+            } else {
+                document.getElementById('hud-status').classList.add('hidden');
+            }
+
+            // Reset statystyk
+            document.getElementById('hud-strokes').innerText = '0';
+            
+            drawGamePlaceholder();
+        }
+
+        // Tymczasowa wizualizacja, póki nie ma silnika gry
+        function drawGamePlaceholder() {
+            if(!isGameRunning) return;
+            
+            // Czyść ekran (Trawa)
+            ctx.fillStyle = '#2ecc71'; 
+            ctx.fillRect(0, 0, width, height);
+
+            // Rysuj Piasek (Bunkier) - placeholder zależny od trudności
+            ctx.fillStyle = '#f1c40f';
+            if(selectedDifficulty === 'easy') ctx.fillRect(width*0.6, height*0.3, 100, 200);
+            if(selectedDifficulty === 'hard') ctx.fillRect(width*0.2, height*0.2, 300, 300);
+
+            // Rysuj Dołek (Flaga)
+            ctx.beginPath();
+            ctx.arc(width * 0.8, height * 0.5, 15, 0, Math.PI * 2);
+            ctx.fillStyle = '#000';
+            ctx.fill();
+            
+            ctx.fillStyle = '#e74c3c'; // Czerwona flaga
+            ctx.fillRect(width * 0.8, height * 0.5 - 60, 40, 30);
+            ctx.fillStyle = '#fff'; // Maszt
+            ctx.fillRect(width * 0.8, height * 0.5 - 60, 3, 60);
+
+            // Rysuj Piłeczkę
+            ctx.beginPath();
+            ctx.arc(width * 0.2, height * 0.5, 10, 0, Math.PI * 2);
+            ctx.fillStyle = '#fff';
+            ctx.fill();
+            ctx.strokeStyle = '#ccc';
+            ctx.stroke();
+
+            ctx.fillStyle = "rgba(255,255,255,0.7)";
+            ctx.font = "20px Segoe UI";
+            ctx.textAlign = "center";
+            ctx.fillText("Tutaj będzie działać gra (Fizyka, sterowanie JS)", width/2, height/2);
+            if(isMultiplayer) {
+                 ctx.fillText("(Tryb Multiplayer Aktywny)", width/2, height/2 + 30);
+            }
+        }
+
     </script>
 </body>
 </html>
