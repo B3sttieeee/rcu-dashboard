@@ -3,66 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ALPHA 1V1 | RCU Dashboard</title>
-    <!-- Główne style -->
+    <title>ALPHA 1V1 | Professional Build</title>
     <link rel="stylesheet" href="./style.css">
+
+    <!-- IMPORT MAP: To sprawia, że Twoje 'import' w JS w końcu zadziałają na GitHubie -->
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.155.0/build/three.module.js",
+                "three/examples/jsm/postprocessing/EffectComposer.js": "https://unpkg.com/three@0.155.0/examples/jsm/postprocessing/EffectComposer.js",
+                "three/examples/jsm/postprocessing/RenderPass.js": "https://unpkg.com/three@0.155.0/examples/jsm/postprocessing/RenderPass.js",
+                "three/examples/jsm/postprocessing/UnrealBloomPass.js": "https://unpkg.com/three@0.155.0/examples/jsm/postprocessing/UnrealBloomPass.js"
+            }
+        }
+    </script>
 </head>
 <body>
-    <!-- Kontener renderowania 3D (Three.js) -->
     <div id="app"></div>
 
-    <!-- Warstwa interfejsu (HUD) -->
     <div id="ui">
-        <!-- Celownik na środku -->
         <div class="crosshair"></div>
         
-        <!-- Statystyki w lewym górnym rogu -->
         <div id="stats">
             <div class="label">STATUS: <span id="status-text">ONLINE</span></div>
-            <div class="hp-bar">
-                <div id="hp-fill" style="width: 100%;"></div>
-            </div>
-            <div class="ammo-box">
-                MODE: <span id="current-mode">BUILD</span>
-            </div>
+            <div class="hp-bar"><div id="hp-fill" style="width: 100%;"></div></div>
+            <div class="ammo-box">MODE: <span id="current-mode">BUILD</span></div>
         </div>
 
-        <!-- Ekwipunek / Sloty budowania na dole -->
         <div id="inventory">
-            <div class="slot active" id="slot-q">
-                <span class="key">Q</span>
-                <span class="name">ŚCIANA</span>
-            </div>
-            <div class="slot" id="slot-e">
-                <span class="key">E</span>
-                <span class="name">PODŁOGA</span>
-            </div>
-            <div class="slot" id="slot-r">
-                <span class="key">R</span>
-                <span class="name">RAMPA</span>
-            </div>
+            <div class="slot active" id="slot-q"><span class="key">Q</span><span class="name">ŚCIANA</span></div>
+            <div class="slot" id="slot-e"><span class="key">E</span><span class="name">PODŁOGA</span></div>
+            <div class="slot" id="slot-r"><span class="key">R</span><span class="name">RAMPA</span></div>
         </div>
 
-        <!-- Menu startowe / Overlay -->
+        <!-- Poprawione ID overlay'a pod logikę kliknięcia -->
         <div id="overlay">
             <div class="menu-card">
                 <h1 class="glitch">ALPHA 1V1</h1>
                 <p class="subtitle">SYSTEM ZAŁADOWANY</p>
-                
                 <div class="instructions">
-                    <div class="inst-item"><span>WSAD</span> PORUSZANIE</div>
+                    <div class="inst-item"><span>WSAD</span> RUCH</div>
                     <div class="inst-item"><span>SPACE</span> SKOK</div>
-                    <div class="inst-item"><span>Q / E</span> TRYB BUDOWY</div>
-                    <div class="inst-item"><span>LPM</span> POSTAW / STRZEL</div>
+                    <div class="inst-item"><span>Q / E</span> BUDOWA</div>
+                    <div class="inst-item"><span>LPM</span> STRZAŁ</div>
                 </div>
-
-                <div class="start-prompt">KLIKNIJ, ABY ROZPOCZĄĆ</div>
+                <div class="start-prompt">KLIKNIJ GDZIEKOLWIEK, ABY ZACZĄĆ</div>
             </div>
         </div>
     </div>
 
-    <!-- Logika gry ładowana jako moduł -->
-    <!-- Uwaga: Vite automatycznie obsłuży tę ścieżkę podczas budowania -->
-    <script type="module" src="./src/main.js"></script>
+    <!-- Zwróć uwagę na './main.js' - upewnij się, że plik jest w tym samym folderze co index! -->
+    <script type="module" src="./main.js"></script>
 </body>
 </html>
