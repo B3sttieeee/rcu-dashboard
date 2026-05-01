@@ -1,0 +1,51 @@
+:root {
+    --accent: #00f2ff;
+    --hp: #ff4757;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+body { background: #050508; overflow: hidden; color: #fff; }
+
+#ui { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10; }
+
+/* Celownik */
+.crosshair {
+    position: absolute; top: 50%; left: 50%;
+    width: 20px; height: 20px;
+    border: 2px solid var(--accent);
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+}
+
+/* Ekwipunek */
+#inventory {
+    position: absolute; bottom: 30px; left: 50%;
+    transform: translateX(-50%);
+    display: flex; gap: 10px; pointer-events: auto;
+}
+
+.slot {
+    width: 60px; height: 60px;
+    background: rgba(255,255,255,0.05);
+    border: 2px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 900; backdrop-filter: blur(10px);
+}
+
+.slot.active { border-color: var(--accent); background: rgba(0, 242, 255, 0.1); }
+
+#overlay {
+    position: absolute; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.8);
+    display: flex; justify-content: center; align-items: center;
+    pointer-events: auto;
+}
+
+.menu-card { text-align: center; background: #000; padding: 60px; border-radius: 40px; border: 1px solid var(--accent); }
+
+button {
+    background: var(--accent); color: #000;
+    padding: 15px 40px; border: none; border-radius: 10px;
+    font-weight: 900; cursor: pointer; margin: 10px;
+}
