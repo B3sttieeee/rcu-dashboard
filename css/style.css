@@ -4,17 +4,16 @@
     box-sizing: border-box;
 }
 
-html {
-    scroll-behavior: smooth;
-}
+html { scroll-behavior: smooth; }
 
 body {
-    background-color: #050505;
+    background-color: #030305;
     color: #fff;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    overflow-x: hidden;
 }
 
-/* Tło i czarna dziura (bez zmian) */
+/* Tło Kosmosu */
 .space-background {
     position: fixed;
     top: 0;
@@ -22,9 +21,11 @@ body {
     width: 100vw;
     height: 100vh;
     z-index: -1;
-    background: radial-gradient(circle at center, #1b2735 0%, #050505 100%);
+    background: radial-gradient(circle at center, #111825 0%, #030305 100%);
+    overflow: hidden;
 }
 
+/* DOPRACOWANA CZARNA DZIURA */
 .black-hole {
     position: absolute;
     top: 50%;
@@ -34,225 +35,191 @@ body {
     height: 350px;
     background: #000;
     border-radius: 50%;
-    box-shadow: 0 0 60px 20px rgba(138, 43, 226, 0.4), 
-                0 0 120px 40px rgba(75, 0, 130, 0.3),
-                inset 0 0 20px 5px rgba(255, 255, 255, 0.05);
+    box-shadow: 0 0 80px 20px rgba(138, 43, 226, 0.4), 
+                0 0 150px 50px rgba(75, 0, 130, 0.2),
+                inset 0 0 25px 8px rgba(255, 255, 255, 0.1);
     animation: pulse-hole 4s infinite alternate ease-in-out;
+    z-index: 1;
 }
 
 @keyframes pulse-hole {
-    0% { box-shadow: 0 0 50px 15px rgba(138, 43, 226, 0.4), 0 0 100px 30px rgba(75, 0, 130, 0.3); }
-    100% { box-shadow: 0 0 80px 25px rgba(138, 43, 226, 0.6), 0 0 150px 50px rgba(75, 0, 130, 0.5); }
+    0% { box-shadow: 0 0 60px 15px rgba(138, 43, 226, 0.3), 0 0 120px 40px rgba(75, 0, 130, 0.2), inset 0 0 20px 5px rgba(255, 255, 255, 0.05); transform: translate(-50%, -50%) scale(0.98); }
+    100% { box-shadow: 0 0 100px 30px rgba(138, 43, 226, 0.6), 0 0 200px 70px rgba(75, 0, 130, 0.4), inset 0 0 30px 10px rgba(255, 255, 255, 0.15); transform: translate(-50%, -50%) scale(1.02); }
 }
 
+/* PLANETY */
+.planet {
+    position: absolute;
+    border-radius: 50%;
+    z-index: 2;
+}
+
+.planet-earth {
+    width: 120px;
+    height: 120px;
+    top: 15%;
+    left: 15%;
+    background: radial-gradient(circle at 30% 30%, #4b80ca, #1a2a40);
+    box-shadow: inset -15px -15px 30px rgba(0,0,0,0.9), 0 0 20px rgba(75, 128, 202, 0.3);
+    animation: float-planet 12s infinite ease-in-out alternate;
+}
+
+.planet-mars {
+    width: 80px;
+    height: 80px;
+    bottom: 20%;
+    right: 15%;
+    background: radial-gradient(circle at 30% 30%, #c44d32, #3b1006);
+    box-shadow: inset -10px -10px 20px rgba(0,0,0,0.9), 0 0 15px rgba(196, 77, 50, 0.3);
+    animation: float-planet 15s infinite ease-in-out alternate-reverse;
+}
+
+@keyframes float-planet {
+    0% { transform: translateY(0) rotate(0deg); }
+    100% { transform: translateY(-30px) rotate(10deg); }
+}
+
+/* Gwiazdy i Meteory */
 .star {
     position: absolute;
-    background-color: #fff;
     border-radius: 50%;
     animation: twinkle infinite alternate ease-in-out;
 }
 
-@keyframes twinkle {
-    0% { opacity: 0.2; transform: scale(0.8); }
-    100% { opacity: 1; transform: scale(1.2); box-shadow: 0 0 5px #fff; }
+.shooting-star {
+    position: absolute;
+    width: 3px;
+    height: 3px;
+    background: #fff;
+    border-radius: 50%;
+    box-shadow: 0 0 10px 2px rgba(255, 255, 255, 0.8);
+    opacity: 0;
+    transform: rotate(-45deg);
+    animation: shoot 2s linear forwards;
 }
 
-/* Menu nawigacji */
+.shooting-star::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 80px;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(255,255,255,1), transparent);
+}
+
+@keyframes twinkle {
+    0% { opacity: 0.1; transform: scale(0.8); }
+    100% { opacity: 1; transform: scale(1.2); box-shadow: 0 0 8px rgba(255,255,255,0.8); }
+}
+
+@keyframes shoot {
+    0% { opacity: 1; transform: translate(0, 0) rotate(-45deg) scale(1); }
+    100% { opacity: 0; transform: translate(-300px, 300px) rotate(-45deg) scale(0); }
+}
+
+/* Nawigacja */
 nav {
     position: fixed;
     top: 0;
     width: 100%;
-    padding: 20px;
-    background: rgba(5, 5, 5, 0.8);
-    backdrop-filter: blur(10px);
-    z-index: 10;
+    padding: 15px;
+    background: rgba(3, 3, 5, 0.85);
+    backdrop-filter: blur(15px);
+    z-index: 100;
     text-align: center;
-    border-bottom: 1px solid rgba(138, 43, 226, 0.3);
+    border-bottom: 1px solid rgba(138, 43, 226, 0.4);
 }
 
-nav ul {
-    list-style: none;
-    display: flex;
-    justify-content: center;
-    gap: 30px;
-    flex-wrap: wrap; /* żeby menu nie psuło się na telefonach */
-}
+nav ul { list-style: none; display: flex; justify-content: center; gap: 40px; flex-wrap: wrap; }
+nav a { color: #fff; text-decoration: none; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; transition: 0.3s; }
+nav a:hover { color: #b366ff; text-shadow: 0 0 15px rgba(138, 43, 226, 0.9); }
 
-nav a {
-    color: #fff;
-    text-decoration: none;
-    font-weight: bold;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    transition: color 0.3s, text-shadow 0.3s;
-}
+/* Główny kontener */
+main { display: flex; flex-direction: column; align-items: center; margin-top: 60px; z-index: 10; position: relative; }
+section { min-height: 100vh; width: 100%; max-width: 900px; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; }
 
-nav a:hover {
-    color: #8a2be2;
-    text-shadow: 0 0 10px rgba(138, 43, 226, 0.8);
-}
-
-/* Układ główny i panele */
-main {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-top: 80px;
-}
-
-section {
-    min-height: 100vh;
-    width: 100%;
-    max-width: 900px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
-}
-
+/* Panele Szklane */
 .glass-panel {
     text-align: center;
-    padding: 40px;
+    padding: 50px;
     margin: 20px;
-    background: rgba(10, 10, 15, 0.6);
-    border-radius: 20px;
-    border: 1px solid rgba(138, 43, 226, 0.3);
-    backdrop-filter: blur(10px);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
-    transition: transform 0.4s ease;
+    background: rgba(15, 15, 25, 0.5);
+    border-radius: 25px;
+    border: 1px solid rgba(138, 43, 226, 0.2);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.8);
+    transition: transform 0.4s ease, border-color 0.4s;
 }
 
-.glass-panel:hover {
-    transform: translateY(-5px);
-    border-color: rgba(138, 43, 226, 0.6);
-}
+.glass-panel:hover { transform: translateY(-5px); border-color: rgba(138, 43, 226, 0.6); }
 
-h1, h2 {
-    margin-bottom: 20px;
-    text-shadow: 0 0 15px rgba(138, 43, 226, 0.8);
-}
+h1 { font-size: 3.5rem; margin-bottom: 20px; text-shadow: 0 0 20px rgba(138, 43, 226, 0.9); }
+h2 { font-size: 2.5rem; margin-bottom: 20px; text-shadow: 0 0 15px rgba(138, 43, 226, 0.8); }
+p { font-size: 1.2rem; color: #ccc; line-height: 1.6; margin-bottom: 25px; }
 
-h1 { font-size: 3rem; }
-h2 { font-size: 2.2rem; }
-p { font-size: 1.2rem; color: #b3b3b3; line-height: 1.6; margin-bottom: 20px; }
-
-/* KARTY DISCORD / KLAN */
-.cards-container {
-    display: flex;
-    justify-content: center;
-    gap: 30px;
-    margin-top: 20px;
-    flex-wrap: wrap; /* Karty spadną pod siebie na wąskim ekranie */
-}
+/* KARTY DISCORD - NAPRAWA BŁĘDU Z ROZMIAREM */
+.cards-container { display: flex; justify-content: center; gap: 40px; margin-top: 20px; flex-wrap: wrap; }
 
 .info-card {
-    background: rgba(20, 20, 30, 0.7);
-    border: 1px solid rgba(138, 43, 226, 0.4);
-    border-radius: 15px;
-    padding: 30px 20px;
-    width: 280px;
+    background: rgba(20, 20, 30, 0.8);
+    border: 1px solid rgba(138, 43, 226, 0.3);
+    border-radius: 20px;
+    padding: 35px 25px;
+    width: 300px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    transition: all 0.3s ease;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+    transition: 0.4s ease;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
 }
 
-.info-card:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 15px 30px rgba(138, 43, 226, 0.3);
-    background: rgba(30, 30, 45, 0.8);
+.info-card:hover { transform: translateY(-10px); box-shadow: 0 15px 40px rgba(138, 43, 226, 0.4); background: rgba(30, 30, 45, 0.9); }
+
+/* ŻELAZNA ZASADA DLA AWATARÓW - to naprawia Twój problem! */
+.avatar-wrapper {
+    width: 120px;
+    height: 120px;
+    margin-bottom: 20px;
 }
 
-.info-card h3 {
-    margin: 15px 0 10px;
-    font-size: 1.4rem;
-    color: #fff;
-}
-
-.discord-nick {
-    background: rgba(0, 0, 0, 0.5);
-    padding: 10px 20px;
-    border-radius: 10px;
-    border: 1px dashed rgba(138, 43, 226, 0.5);
-    font-size: 1.1rem;
-    color: #e0e0e0;
-}
-
-.discord-nick strong {
-    color: #fff;
-    text-shadow: 0 0 8px rgba(138, 43, 226, 0.8);
-}
-
-.clan-desc {
-    font-size: 1rem;
-    margin-bottom: 15px;
-}
-
-/* Awatary i ich animacje */
 .avatar {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    object-fit: cover;
+    width: 120px !important;
+    height: 120px !important;
+    border-radius: 50% !important;
+    object-fit: cover !important; /* Przycina zdjęcie do idealnego koła */
     border: 3px solid #8a2be2;
-    box-shadow: 0 0 15px rgba(138, 43, 226, 0.6);
+    box-shadow: 0 0 20px rgba(138, 43, 226, 0.7);
+    display: block;
 }
 
-/* Efekt "lewitacji" w przestrzeni kosmicznej */
-.float-anim {
-    animation: floating 4s ease-in-out infinite;
-}
-
-.float-anim-delayed {
-    animation: floating 4s ease-in-out infinite 2s; /* Opóźnione, żeby nie ruszały się identycznie */
-}
+.float-anim { animation: floating 4s ease-in-out infinite; }
+.float-anim-delayed { animation: floating 4s ease-in-out infinite 2s; }
 
 @keyframes floating {
     0% { transform: translateY(0px); }
-    50% { transform: translateY(-12px); box-shadow: 0 0 25px rgba(138, 43, 226, 0.9); }
+    50% { transform: translateY(-10px); box-shadow: 0 0 30px rgba(138, 43, 226, 1); }
     100% { transform: translateY(0px); }
 }
 
+.info-card h3 { margin-bottom: 15px; font-size: 1.5rem; color: #fff; }
+.discord-nick { background: rgba(0, 0, 0, 0.6); padding: 12px 25px; border-radius: 12px; border: 1px dashed rgba(138, 43, 226, 0.6); font-size: 1.1rem; color: #e0e0e0; }
+.discord-nick strong { color: #fff; text-shadow: 0 0 10px rgba(138, 43, 226, 0.9); }
+.clan-desc { font-size: 1.1rem; margin-bottom: 20px; }
+
 /* Przyciski */
-.btn {
-    display: inline-block;
-    padding: 12px 25px;
-    margin-top: 10px;
-    color: #fff;
-    text-decoration: none;
-    border: 2px solid #8a2be2;
-    border-radius: 30px;
-    transition: all 0.3s ease;
-    text-transform: uppercase;
-    font-weight: bold;
-    letter-spacing: 1px;
-}
-
-.btn:hover {
-    background-color: #8a2be2;
-    box-shadow: 0 0 20px #8a2be2;
-    transform: translateY(-2px);
-}
-
-/* Przycisk dołączania do klanu - pulsujący neon */
-.pulse-btn {
-    animation: neon-pulse 2s infinite;
-}
+.btn { display: inline-block; padding: 14px 30px; margin-top: 10px; color: #fff; text-decoration: none; border: 2px solid #8a2be2; border-radius: 30px; transition: 0.3s; text-transform: uppercase; font-weight: bold; letter-spacing: 1px; }
+.btn:hover { background-color: #8a2be2; box-shadow: 0 0 25px #8a2be2; transform: translateY(-3px); }
+.pulse-btn { animation: neon-pulse 2s infinite; }
 
 @keyframes neon-pulse {
     0% { box-shadow: 0 0 5px rgba(138, 43, 226, 0.4); }
-    50% { box-shadow: 0 0 20px rgba(138, 43, 226, 0.8); }
+    50% { box-shadow: 0 0 25px rgba(138, 43, 226, 0.9); }
     100% { box-shadow: 0 0 5px rgba(138, 43, 226, 0.4); }
 }
 
-/* Prosta animacja pojawiania się sekcji (Fade In) */
-.fade-in {
-    animation: fadeIn 1.5s ease-in;
-}
-
+.fade-in { animation: fadeIn 1.5s ease-out forwards; opacity: 0; }
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); }
+    from { opacity: 0; transform: translateY(30px); }
     to { opacity: 1; transform: translateY(0); }
 }
