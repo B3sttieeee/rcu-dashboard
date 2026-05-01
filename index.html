@@ -3,69 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>B3sttieeee | Deep Space Observation</title>
+    <title>B3sttieeee | Event Horizon ULTRA</title>
     <style>
-        /* --- STYLIZACJA INTERFEJSU (UI) --- */
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background: #000; color: #fff; font-family: 'Inter', 'Segoe UI', sans-serif; overflow: hidden; }
-        
+        body { background: #000; color: #fff; font-family: 'Inter', sans-serif; overflow: hidden; }
         #canvas-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
         
-        /* Minimalistyczne Nav */
-        nav { 
-            position: fixed; top: 0; width: 100%; padding: 20px; z-index: 100; 
-            display: flex; justify-content: center; 
-            background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent);
-        }
-        .nav-content { display: flex; justify-content: space-between; width: 100%; max-width: 1400px; padding: 0 20px; align-items: center; }
-        .logo { font-weight: 900; letter-spacing: 5px; font-size: 1rem; color: #fff; opacity: 0.8; }
-        nav ul { display: flex; list-style: none; gap: 30px; }
-        nav a { color: #fff; text-decoration: none; font-size: 10px; text-transform: uppercase; letter-spacing: 2px; opacity: 0.4; transition: 0.4s; }
-        nav a:hover { opacity: 1; }
-
-        /* Przezroczyste UI na dole, aby nie zasłaniać centrum */
-        main { 
-            position: absolute; bottom: 5%; width: 100%; 
-            display: flex; justify-content: center; z-index: 10; pointer-events: none; 
-        }
+        /* UI - Minimalistyczna kapsuła na dole */
+        main { position: absolute; bottom: 30px; width: 100%; display: flex; justify-content: center; z-index: 10; pointer-events: none; }
         .hero-content { 
-            text-align: center; background: rgba(0,0,0,0.3); padding: 30px 60px; border-radius: 100px; 
-            backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.05); pointer-events: auto;
-            transition: 0.5s;
+            text-align: center; background: rgba(0,0,0,0.4); padding: 20px 50px; border-radius: 50px; 
+            backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.1); pointer-events: auto;
         }
-        .hero-content:hover { background: rgba(0,0,0,0.5); border-color: rgba(255,165,0,0.2); }
-        
-        h1 { font-size: 1.5rem; margin-bottom: 5px; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; }
-        p { color: #666; margin-bottom: 20px; font-size: 0.8rem; letter-spacing: 1px; }
-        
-        .btn { 
-            padding: 10px 30px; background: transparent; color: #fff; text-decoration: none; 
-            border-radius: 50px; font-weight: 700; border: 1px solid #fff;
-            transition: 0.4s; display: inline-block; font-size: 0.7rem; text-transform: uppercase;
-        }
-        .btn:hover { background: #fff; color: #000; box-shadow: 0 0 20px #fff; }
+        h1 { font-size: 1.2rem; letter-spacing: 3px; font-weight: 900; color: #ffaa00; }
+        .btn { color: #fff; text-decoration: none; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; opacity: 0.6; transition: 0.3s; }
+        .btn:hover { opacity: 1; text-shadow: 0 0 10px #fff; }
     </style>
 </head>
 <body>
 
     <div id="canvas-container"></div>
 
-    <nav>
-        <div class="nav-content">
-            <div class="logo">B3STTIEEEE</div>
-            <ul>
-                <li><a href="#">Baza</a></li>
-                <li><a href="#">Łączność</a></li>
-                <li><a href="#">Repo</a></li>
-            </ul>
-        </div>
-    </nav>
-
     <main>
         <div class="hero-content">
-            <h1>System Online.</h1>
-            <p>Horyzont zdarzeń monitorowany stabilnie.</p>
-            <a href="https://github.com/B3sttieeee" class="btn">Archiwum Danych</a>
+            <h1>SYSTEM ONLINE</h1>
+            <a href="https://github.com/B3sttieeee" class="btn">Archiwum GitHuba</a>
         </div>
     </main>
 
@@ -74,39 +36,38 @@
 
         let scene, camera, renderer, disk, stars, suns = [];
 
-        function createStarTexture(colorStr) {
+        // Tworzenie "miękkiej" tekstury dla cząsteczek plazmy
+        function createSoftTexture() {
             const canvas = document.createElement('canvas');
-            canvas.width = 128;
-            canvas.height = 128;
+            canvas.width = 64; canvas.height = 64;
             const ctx = canvas.getContext('2d');
-            const grad = ctx.createRadialGradient(64, 64, 0, 64, 64, 64);
-            grad.addColorStop(0, colorStr);
-            grad.addColorStop(0.2, colorStr);
-            grad.addColorStop(0.5, 'rgba(255,255,255,0.1)');
-            grad.addColorStop(1, 'rgba(0,0,0,0)');
+            const grad = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
+            grad.addColorStop(0, 'rgba(255,255,255,1)');
+            grad.addColorStop(0.3, 'rgba(255,255,255,0.3)');
+            grad.addColorStop(1, 'rgba(255,255,255,0)');
             ctx.fillStyle = grad;
-            ctx.fillRect(0, 0, 128, 128);
+            ctx.fillRect(0, 0, 64, 64);
             return new THREE.CanvasTexture(canvas);
         }
 
         function init() {
             scene = new THREE.Scene();
-            camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 10000);
-            camera.position.set(0, 200, 600);
+            camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 20000);
+            camera.position.set(0, 250, 700);
 
-            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
             renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.setPixelRatio(window.devicePixelRatio);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
             document.getElementById('canvas-container').appendChild(renderer.domElement);
 
             // 1. CZARNA DZIURA
-            const bhGeo = new THREE.SphereGeometry(95, 64, 64);
+            const bhGeo = new THREE.SphereGeometry(100, 64, 64);
             const bhMat = new THREE.MeshBasicMaterial({ color: 0x000000 });
             const blackHole = new THREE.Mesh(bhGeo, bhMat);
             scene.add(blackHole);
 
-            // 2. REALISTYCZNY DYSK AKRECYJNY (Prawdziwe kolory ognia/plazmy)
-            const count = 35000;
+            // 2. ULTRA DYSK AKRECYJNY (60 000 cząsteczek)
+            const count = 60000;
             const diskGeo = new THREE.BufferGeometry();
             const positions = [];
             const colors = [];
@@ -114,25 +75,25 @@
             const color = new THREE.Color();
 
             for (let i = 0; i < count; i++) {
-                const r = Math.random() * 450 + 105;
+                const r = Math.random() * 500 + 110;
                 const theta = Math.random() * Math.PI * 2;
                 
+                // Matematyczne wygięcie grawitacyjne (Interstellar Warp)
                 const x = r * Math.cos(theta);
                 const z = r * Math.sin(theta);
-                // Grawitacyjne wygięcie "Interstellar"
-                const y = (Math.sin(r * 0.01) * 60) * Math.cos(theta * 0.5) + (Math.random() - 0.5) * 8;
+                const y = (Math.sin(r * 0.008) * 80) * Math.cos(theta * 0.5) + (Math.random() - 0.5) * 12;
 
                 positions.push(x, y, z);
 
-                // Fizyczna gradacja temperatury plazmy
-                const dist = (r - 105) / 450;
-                if (dist < 0.1) color.setHex(0xffffff); // Biel (najgorętsze)
-                else if (dist < 0.4) color.setHex(0xffaa00); // Złoto
-                else if (dist < 0.7) color.setHex(0xff4400); // Pomarańcz
-                else color.setHex(0x330000); // Mroczna czerwień (stygnięcie)
+                // Gradacja kolorów ognia
+                const dist = (r - 110) / 500;
+                if (dist < 0.15) color.setHex(0xffffff); // Jądro
+                else if (dist < 0.5) color.setHex(0xffaa00); // Złoto
+                else if (dist < 0.8) color.setHex(0xff4400); // Ogień
+                else color.setHex(0x441100); // Ciemny żar
                 
                 colors.push(color.r, color.g, color.b);
-                sizes.push(Math.random() * 6 + 2);
+                sizes.push(Math.random() * 8 + 3);
             }
 
             diskGeo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
@@ -140,75 +101,74 @@
             diskGeo.setAttribute('size', new THREE.Float32BufferAttribute(sizes, 1));
 
             const diskMat = new THREE.PointsMaterial({
-                size: 3,
-                map: createStarTexture('rgba(255,255,255,0.8)'),
+                size: 5,
+                map: createSoftTexture(),
                 vertexColors: true,
                 transparent: true,
-                opacity: 0.7,
-                blending: THREE.AdditiveBlending,
-                depthWrite: false
+                opacity: 0.8,
+                blending: THREE.AdditiveBlending, // Nakładanie kolorów (świetlistość)
+                depthWrite: false // Zapobiega "szparom" i błędom głębi
             });
 
             disk = new THREE.Points(diskGeo, diskMat);
             scene.add(disk);
 
-            // 3. SYSTEM SŁOŃC (Gwiazdy typu Syriusz / Olbrzymy)
-            const sunConfigs = [
-                { color: 0x4488ff, size: 40, dist: 1500, name: 'Sirius' },  // Błękitny olbrzym
-                { color: 0xff3300, size: 70, dist: 2500, name: 'Betelgeuse' }, // Czerwony nadolbrzym
-                { color: 0xffffff, size: 15, dist: 1200, name: 'White Dwarf' } // Biały karzeł
+            // 3. OLBRZYMY (System słońc w oddali)
+            const sunsData = [
+                { color: 0x66aaff, size: 400, pos: [2000, 500, -2000] }, // Syriusz (Błękitny)
+                { color: 0xff4400, size: 600, pos: [-3000, -200, -1000] }, // Betelgeza (Czerwony)
+                { color: 0xffffff, size: 150, pos: [1000, -1000, 1500] }  // Biały karzeł
             ];
 
-            sunConfigs.forEach(config => {
-                const spriteMat = new THREE.SpriteMaterial({
-                    map: createStarTexture(config.color === 0xffffff ? 'rgba(255,255,255,1)' : 'rgba(255,100,50,0.8)'),
-                    color: config.color,
+            sunsData.forEach(data => {
+                const sMat = new THREE.SpriteMaterial({
+                    map: createSoftTexture(),
+                    color: data.color,
                     blending: THREE.AdditiveBlending,
-                    transparent: true
+                    transparent: true,
+                    opacity: 0.9
                 });
-                const sprite = new THREE.Sprite(spriteMat);
-                const angle = Math.random() * Math.PI * 2;
-                sprite.position.set(Math.cos(angle)*config.dist, (Math.random()-0.5)*500, Math.sin(angle)*config.dist);
-                sprite.scale.set(config.size, config.size, 1);
+                const sprite = new THREE.Sprite(sMat);
+                sprite.position.set(...data.pos);
+                sprite.scale.set(data.size, data.size, 1);
                 scene.add(sprite);
                 suns.push(sprite);
             });
 
-            // 4. GWIAZDY TŁA
+            // 4. GWIAZDY TŁA (15 000 punktów)
             const sGeo = new THREE.BufferGeometry();
             const sPos = [];
-            for (let i = 0; i < 10000; i++) {
-                sPos.push((Math.random() - 0.5) * 8000, (Math.random() - 0.5) * 8000, (Math.random() - 0.5) * 8000);
+            for (let i = 0; i < 15000; i++) {
+                sPos.push((Math.random() - 0.5) * 10000, (Math.random() - 0.5) * 10000, (Math.random() - 0.5) * 10000);
             }
             sGeo.setAttribute('position', new THREE.Float32BufferAttribute(sPos, 3));
-            stars = new THREE.Points(sGeo, new THREE.PointsMaterial({ color: 0xffffff, size: 1, transparent: true, opacity: 0.5 }));
+            stars = new THREE.Points(sGeo, new THREE.PointsMaterial({ color: 0xffffff, size: 1.5, transparent: true, opacity: 0.4 }));
             scene.add(stars);
 
             animate();
         }
 
-        let targetX = 0, targetY = 0;
+        let mouseX = 0, mouseY = 0;
         window.addEventListener('mousemove', (e) => {
-            targetX = (e.clientX - window.innerWidth / 2) * 0.15;
-            targetY = (e.clientY - window.innerHeight / 2) * 0.15;
+            mouseX = (e.clientX - window.innerWidth / 2) * 0.2;
+            mouseY = (e.clientY - window.innerHeight / 2) * 0.2;
         });
 
         function animate() {
             requestAnimationFrame(animate);
             const time = Date.now() * 0.0005;
 
-            disk.rotation.y += 0.004;
-            stars.rotation.y -= 0.0001;
-
-            // Efekt pulsowania "słońc"
+            disk.rotation.y += 0.005;
+            
+            // Pulsowanie olbrzymów
             suns.forEach((sun, i) => {
-                const s = 1 + Math.sin(time + i) * 0.2;
-                sun.scale.set(s * 30, s * 30, 1);
+                const pulse = 1 + Math.sin(time * 2 + i) * 0.1;
+                sun.scale.set(pulse * (i===1 ? 600 : 300), pulse * (i===1 ? 600 : 300), 1);
             });
 
-            // Kamera podąża za myszką
-            camera.position.x += (targetX - camera.position.x) * 0.05;
-            camera.position.y += (-targetY + 200 - camera.position.y) * 0.05;
+            // Płynna kamera 3D
+            camera.position.x += (mouseX - camera.position.x) * 0.05;
+            camera.position.y += (-mouseY + 250 - camera.position.y) * 0.05;
             camera.lookAt(0, 0, 0);
 
             renderer.render(scene, camera);
