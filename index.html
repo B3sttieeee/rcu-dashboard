@@ -3,38 +3,151 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>B3sttieeee | Event Horizon</title>
-    <link rel="stylesheet" href="./css/main.css?v=final">
-    <!-- Ładujemy silnik 3D -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <title>B3sttieeee | Event Horizon 3D</title>
+    <style>
+        /* STYLE UI */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #000; color: #fff; font-family: 'Segoe UI', sans-serif; overflow: hidden; }
+        
+        #canvas-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
+        
+        nav { position: fixed; top: 0; width: 100%; padding: 20px; z-index: 100; display: flex; justify-content: center; }
+        .nav-content { display: flex; justify-content: space-between; width: 100%; max-width: 1200px; padding: 0 20px; }
+        .logo { font-weight: 900; letter-spacing: 2px; }
+        nav ul { display: flex; list-style: none; gap: 20px; }
+        nav a { color: #888; text-decoration: none; font-size: 12px; text-transform: uppercase; transition: 0.3s; }
+        nav a:hover { color: #fff; }
+
+        main { position: relative; z-index: 10; width: 100%; height: 100vh; display: flex; align-items: center; justify-content: center; pointer-events: none; }
+        .hero-content { 
+            text-align: center; background: rgba(0,0,0,0.7); padding: 40px; border-radius: 20px; 
+            backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); pointer-events: auto;
+        }
+        h1 { font-size: 3rem; margin-bottom: 10px; }
+        p { color: #aaa; margin-bottom: 25px; }
+        .btn { padding: 12px 35px; background: #fff; color: #000; text-decoration: none; border-radius: 50px; font-weight: bold; transition: 0.3s; display: inline-block; }
+        .btn:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(255,255,255,0.2); }
+    </style>
 </head>
 <body>
-    <!-- Kontener na kosmos 3D -->
-    <div id="universe-container"></div>
 
-    <header>
-        <nav>
-            <div class="nav-content">
-                <div class="logo">B3STTIEEEE</div>
-                <ul>
-                    <li><a href="#home">BAZA</a></li>
-                    <li><a href="#discord">ŁĄCZNOŚĆ</a></li>
-                    <li><a href="#projects">REPO</a></li>
-                </ul>
-            </div>
-        </nav>
-    </header>
+    <div id="canvas-container"></div>
+
+    <nav>
+        <div class="nav-content">
+            <div class="logo">B3STTIEEEE</div>
+            <ul>
+                <li><a href="#">Baza</a></li>
+                <li><a href="#">Łączność</a></li>
+                <li><a href="#">Repo</a></li>
+            </ul>
+        </div>
+    </nav>
 
     <main>
-        <section id="home">
-            <div class="hero-content">
-                <h1>System Online.</h1>
-                <p>Eksploracja horyzontu zdarzeń w toku...</p>
-                <a href="#projects" class="btn primary-btn">Zainicjuj Podróż</a>
-            </div>
-        </section>
+        <div class="hero-content">
+            <h1>System Online.</h1>
+            <p>Horyzont zdarzeń zainicjowany...</p>
+            <a href="https://github.com/B3sttieeee" class="btn">Mój GitHub</a>
+        </div>
     </main>
 
-    <script src="./js/space.js?v=final"></script>
+    <!-- SILNIK 3D -->
+    <script type="module">
+        import * as THREE from 'https://cdn.skypack.dev/three@0.132.2';
+
+        let scene, camera, renderer, disk, stars;
+
+        function init() {
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 2000);
+            camera.position.set(0, 150, 400);
+
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+            // 1. CZARNA DZIURA
+            const bhGeo = new THREE.SphereGeometry(70, 32, 32);
+            const bhMat = new THREE.MeshBasicMaterial({ color: 0x000000 });
+            const blackHole = new THREE.Mesh(bhGeo, bhMat);
+            scene.add(blackHole);
+
+            // 2. DYSK AKRECYJNY (Symulacja cząsteczek gazu)
+            const particles = 15000;
+            const geo = new THREE.BufferGeometry();
+            const pos = [];
+            const cols = [];
+            const color = new THREE.Color();
+
+            for (let i = 0; i < particles; i++) {
+                const r = Math.random() * 250 + 80;
+                const theta = Math.random() * Math.PI * 2;
+                
+                // Matematyczne wygięcie dysku
+                const x = r * Math.cos(theta);
+                const z = r * Math.sin(theta);
+                const y = (Math.sin(r * 0.02) * 30) + (Math.random() - 0.5) * 15;
+
+                pos.push(x, y, z);
+
+                // Doppler shift - kolory od ognia po mroczny fiolet
+                const ratio = Math.random();
+                if (ratio > 0.8) color.setHex(0x5500ff); // Fiolet
+                else if (ratio > 0.4) color.setHex(0xff6600); // Pomarańcz
+                else color.setHex(0xffaa00); // Złoty
+                
+                cols.push(color.r, color.g, color.b);
+            }
+
+            geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+            geo.setAttribute('color', new THREE.Float32BufferAttribute(cols, 3));
+
+            const mat = new THREE.PointsMaterial({
+                size: 1.5,
+                vertexColors: true,
+                transparent: true,
+                opacity: 0.8,
+                blending: THREE.AdditiveBlending
+            });
+
+            disk = new THREE.Points(geo, mat);
+            scene.add(disk);
+
+            // 3. GWIAZDY
+            const sGeo = new THREE.BufferGeometry();
+            const sPos = [];
+            for (let i = 0; i < 5000; i++) {
+                sPos.push((Math.random() - 0.5) * 2000, (Math.random() - 0.5) * 2000, (Math.random() - 0.5) * 2000);
+            }
+            sGeo.setAttribute('position', new THREE.Float32BufferAttribute(sPos, 3));
+            stars = new THREE.Points(sGeo, new THREE.PointsMaterial({ color: 0xffffff, size: 0.8 }));
+            scene.add(stars);
+
+            animate();
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            disk.rotation.y += 0.002;
+            disk.rotation.z += 0.0005;
+            stars.rotation.y -= 0.0002;
+            
+            // Kamera lekko "pływa"
+            camera.position.x += (Math.sin(Date.now() * 0.0005) * 0.2);
+            camera.lookAt(0, 0, 0);
+
+            renderer.render(scene, camera);
+        }
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        init();
+    </script>
 </body>
 </html>
