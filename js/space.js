@@ -1,58 +1,97 @@
 document.addEventListener("DOMContentLoaded", () => {
-    const starsContainer = document.getElementById('stars-container');
-    const numberOfStars = 200;
+    // --- 1. SILNIK GWIAZD 3D (CANVAS) ---
+    const canvas = document.getElementById('space-canvas');
+    const ctx = canvas.getContext('2d');
 
-    // Kolory gwiazd (białe, lekko niebieskie, lekko żółte)
-    const starColors = ['#ffffff', '#cceeff', '#fffae6'];
+    let width, height;
+    let stars = [];
+    const numStars = 800; // Ilość gwiazd
+    const speed = 0.5;    // Prędkość lotu
 
-    // 1. Generowanie zwykłych gwiazd
-    for (let i = 0; i < numberOfStars; i++) {
-        const star = document.createElement('div');
-        star.classList.add('star');
-
-        const xPos = Math.random() * 100;
-        const yPos = Math.random() * 100;
-        const size = Math.random() * 2 + 0.5;
-        const duration = Math.random() * 4 + 1;
-        const color = starColors[Math.floor(Math.random() * starColors.length)];
-
-        star.style.left = `${xPos}vw`;
-        star.style.top = `${yPos}vh`;
-        star.style.width = `${size}px`;
-        star.style.height = `${size}px`;
-        star.style.backgroundColor = color;
-        star.style.animationDuration = `${duration}s`;
-
-        starsContainer.appendChild(star);
+    function resizeCanvas() {
+        width = window.innerWidth;
+        height = window.innerHeight;
+        canvas.width = width;
+        canvas.height = height;
     }
 
-    // 2. Generowanie spadających gwiazd (Meteorów)
-    function createShootingStar() {
-        const shootingStar = document.createElement('div');
-        shootingStar.classList.add('shooting-star');
+    class Star {
+        constructor() {
+            this.reset();
+            // Rozrzuć gwiazdy na start po całej osi Z, żeby nie zaczynały z jednego punktu
+            this.z = Math.random() * width; 
+        }
 
-        // Zaczynają z góry lub z prawej strony ekranu
-        const startX = Math.random() * 100 + 20; // 20vw do 120vw
-        const startY = Math.random() * 50 - 20; // -20vh do 30vh
+        reset() {
+            this.x = (Math.random() - 0.5) * width * 2;
+            this.y = (Math.random() - 0.5) * height * 2;
+            this.z = width;
+            this.pz = this.z;
+        }
 
-        shootingStar.style.left = `${startX}vw`;
-        shootingStar.style.top = `${startY}vh`;
+        update() {
+            this.z -= speed;
+            if (this.z < 1) {
+                this.reset();
+                this.z = width; // Upewnij się, że zaczyna z daleka
+            }
+        }
 
-        starsContainer.appendChild(shootingStar);
+        draw() {
+            // Rzutowanie 3D na 2D
+            let sx = (this.x / this.z) * width + width / 2;
+            let sy = (this.y / this.z) * height + height / 2;
+            
+            // Wielkość gwiazdy na podstawie odległości
+            let r = (1 - this.z / width) * 2.5; 
 
-        // Usuń meteor po zakończeniu animacji (żeby nie zapychać HTML-a)
-        setTimeout(() => {
-            shootingStar.remove();
-        }, 2000);
+            ctx.beginPath();
+            ctx.arc(sx, sy, r, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(255, 255, 255, ${1 - this.z / width})`;
+            ctx.fill();
+        }
     }
 
-    // Losuj spadającą gwiazdę co jakiś czas (od 2 do 6 sekund)
-    function randomShootingStarLoop() {
-        createShootingStar();
-        const nextTime = Math.random() * 4000 + 2000;
-        setTimeout(randomShootingStarLoop, nextTime);
+    function initSpace() {
+        resizeCanvas();
+        stars = [];
+        for (let i = 0; i < numStars; i++) {
+            stars.push(new Star());
+        }
+        window.addEventListener('resize', resizeCanvas);
+        requestAnimationFrame(animateSpace);
     }
 
-    // Uruchom pętlę meteorów
-    setTimeout(randomShootingStarLoop, 1000);
+    function animateSpace() {
+        // Czyści ekran, zostawiając leciutką smugę
+        ctx.fillStyle = 'rgba(2, 2, 4, 0.4)';
+        ctx.fillRect(0, 0, width, height);
+
+        for (let star of stars) {
+            star.update();
+            star.draw();
+        }
+        requestAnimationFrame(animateSpace);
+    }
+
+    initSpace();
+
+    // --- 2. PŁYNNE POJAWIANIE SIĘ SEKCJI (SCROLL ANIMATION) ---
+    const observerOptions = {
+        root: null,
+        rootMargin: '0px',
+        threshold: 0.15 // 15% sekcji musi być widoczne, by odpalić animację
+    };
+
+    const observer = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('show');
+                observer.unobserve(entry.target); // Animuj tylko raz
+            }
+        });
+    }, observerOptions);
+
+    const hiddenElements = document.querySelectorAll('.hidden');
+    hiddenElements.forEach((el) => observer.observe(el));
 });
