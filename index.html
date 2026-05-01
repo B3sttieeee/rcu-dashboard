@@ -2,363 +2,199 @@
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mini Golf Online - Graj ze Znajomymi</title>
+    <title>Golf Online P2P | B3sttieeee</title>
+    <script src="https://unpkg.com/peerjs@1.3.1/dist/peerjs.min.js"></script>
     <style>
-        /* --- CSS STYLIZACJA --- */
-        :root {
-            --bg-color: #1a1a2e;
-            --fairway-green: #2ecc71;
-            --green-hover: #27ae60;
-            --text-color: #ecf0f1;
-            --accent-color: #e74c3c; /* Kolor flagi/dołka */
-            --ui-bg: rgba(0, 0, 0, 0.7);
-            --font-main: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
+        :root { --p-green: #2ecc71; --p-dark: #1a1a2e; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        body {
-            font-family: var(--font-main);
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            height: 100vh;
-            overflow: hidden; /* Gra wypełnia ekran */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        /* Ekran gry (Canvas) */
-        #gameCanvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: #34495e; /* Kolor tła ładowania */
-            z-index: 1;
-        }
-
-        /* Warstwa UI (Interfejsu) */
-        #ui-layer {
-            position: relative;
-            z-index: 10;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            pointer-events: none; /* UI przepuszcza kliki, chyba że element jest aktywny */
-        }
-
-        .screen {
-            background-color: var(--ui-bg);
-            padding: 40px;
-            border-radius: 20px;
-            border: 2px solid var(--fairway-green);
-            text-align: center;
-            backdrop-filter: blur(5px);
-            pointer-events: auto; /* Elementy wewnątrz ekranów reagują na kliki */
-            max-width: 500px;
-            width: 90%;
-            box-shadow: 0 0 20px rgba(0,255,0,0.2);
-        }
-
-        .hidden { display: none !important; }
-
-        h1 { font-size: 3rem; margin-bottom: 20px; color: var(--fairway-green); text-transform: uppercase; letter-spacing: 3px; }
-        h2 { font-size: 1.5rem; margin-bottom: 15px; color: #fff; }
-        p { margin-bottom: 20px; color: #ccc; }
-
-        /* Przyciski */
-        .btn-container { display: flex; flex-direction: column; gap: 15px; }
+        body { background: var(--p-dark); color: white; font-family: sans-serif; overflow: hidden; }
+        canvas { display: block; background: #27ae60; cursor: crosshair; }
         
-        button {
-            padding: 15px 30px;
-            font-size: 1.2rem;
-            font-weight: bold;
-            border: none;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            text-transform: uppercase;
-        }
-
-        .btn-primary { background-color: var(--fairway-green); color: #000; }
-        .btn-primary:hover { background-color: var(--green-hover); transform: scale(1.05); }
-
-        .btn-secondary { background-color: transparent; border: 2px solid var(--text-color); color: var(--text-color); }
-        .btn-secondary:hover { background-color: rgba(255,255,255,0.1); }
-
-        .btn-danger { background-color: var(--accent-color); color: white; }
-
-        /* Siatka poziomów trudności */
-        .difficulty-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-        .diff-btn { font-size: 1rem; padding: 10px; }
-        .diff-btn.active { background-color: var(--fairway-green); color: black; border-color: var(--fairway-green); }
-
-        /* Inputy dla Multiplayer */
-        input {
-            width: 100%;
-            padding: 15px;
-            margin-bottom: 15px;
-            border-radius: 10px;
-            border: 1px solid #555;
-            background: rgba(255,255,255,0.1);
-            color: white;
-            font-size: 1rem;
-        }
-
-        /* HUD w trakcie gry */
-        #game-hud {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            pointer-events: none;
-            display: flex;
-            gap: 20px;
-            font-weight: bold;
-            font-size: 1.2rem;
-            text-shadow: 0 0 5px #000;
-        }
-        .hud-item { background: rgba(0,0,0,0.5); padding: 5px 15px; border-radius: 10px; }
-        #exit-game-btn { position: absolute; top: 20px; right: 20px; pointer-events: auto; padding: 10px 20px; font-size: 1rem; }
-
+        #ui-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10; display: flex; justify-content: center; align-items: center; }
+        .menu { background: rgba(0,0,0,0.9); padding: 30px; border-radius: 20px; text-align: center; border: 2px solid var(--p-green); pointer-events: auto; }
+        .hidden { display: none !important; }
+        
+        button { padding: 10px 20px; margin: 5px; border: none; border-radius: 5px; background: var(--p-green); font-weight: bold; cursor: pointer; }
+        input { padding: 10px; border-radius: 5px; border: none; margin-bottom: 10px; width: 200px; }
+        
+        #hud { position: fixed; top: 20px; left: 20px; font-weight: bold; background: rgba(0,0,0,0.5); padding: 10px; border-radius: 10px; }
+        #connection-status { position: fixed; top: 20px; right: 20px; font-size: 0.8rem; color: #aaa; }
     </style>
 </head>
 <body>
 
-    <!-- KANWAS GRY - Tutaj silnik JS będzie rysował golfa -->
-    <canvas id="gameCanvas"></canvas>
+    <canvas id="golfCanvas"></canvas>
 
-    <!-- HUD W TRAKCIE GRY (Domyślnie ukryty) -->
-    <div id="game-hud" class="hidden">
-        <div class="hud-item">Dołek: <span id="hud-hole">1</span></div>
-        <div class="hud-item">Uderzeń: <span id="hud-strokes">0</span></div>
-        <div class="hud-item">Par: <span id="hud-par">3</span></div>
-        <div class="hud-item hidden" id="hud-status">Czekam na graczy...</div>
-    </div>
-    <button id="exit-game-btn" class="btn-danger hidden">Wyjdź</button>
-
-    <!-- WARSTWA UI INTERFEJSU -->
-    <div id="ui-layer">
-
-        <!-- 1. MENU GŁÓWNE -->
-        <div id="screen-main" class="screen">
-            <h1>MINI GOLF</h1>
-            <h2>ONLINE</h2>
-            <p>Witaj w klubie. Wybierz tryb gry.</p>
-            <div class="btn-container">
-                <button class="btn-primary" onclick="showScreen('screen-single')">Gra Pojedyncza</button>
-                <button class="btn-secondary" onclick="showScreen('screen-multi-lobby')">Graj ze Znajomymi (Online)</button>
-                <button class="btn-secondary" onclick="alert('Ustawienia w budowie!')">Ustawienia</button>
-            </div>
+    <div id="ui-overlay">
+        <!-- MENU GŁÓWNE -->
+        <div id="main-menu" class="menu">
+            <h1>GOLF P2P</h1>
+            <p style="margin-bottom: 20px;">Graj lokalnie lub ze znajomym</p>
+            <button onclick="startLocal()">Graj Sam (Trening)</button>
+            <hr style="margin: 20px; border-color: #333;">
+            <button style="background: #3498db;" onclick="initHost()">Stwórz Pokój (Host)</button>
+            <button style="background: #9b59b6;" onclick="showJoinMenu()">Dołącz do znajomego</button>
         </div>
 
-        <!-- 2. SEKCJA: GRA POJEDYNCZA (Wybór Trudności) -->
-        <div id="screen-single" class="screen hidden">
-            <h2>Wybierz Poziom</h2>
-            <div class="difficulty-grid">
-                <button class="btn-secondary diff-btn active" onclick="selectDifficulty(this, 'easy')">Łatwy</button>
-                <button class="btn-secondary diff-btn" onclick="selectDifficulty(this, 'medium')">Średni</button>
-                <button class="btn-secondary diff-btn" onclick="selectDifficulty(this, 'hard')">Trudny</button>
-            </div>
-            <p>Poziom wpływa na ukształtowanie terenu i siłę wiatru.</p>
-            <div class="btn-container">
-                <button class="btn-primary" onclick="startSinglePlayer()">Zacznij Grę</button>
-                <button class="btn-secondary" onclick="showScreen('screen-main')">Powrót</button>
-            </div>
+        <!-- MENU HOSTA -->
+        <div id="host-menu" class="menu hidden">
+            <h2>Twój Kod Pokoju:</h2>
+            <h1 id="my-id" style="color: #f1c40f; margin: 20px 0;">Ładowanie...</h1>
+            <p>Wyślij ten kod znajomemu.</p>
+            <p id="wait-msg">Czekanie na połączenie...</p>
         </div>
 
-        <!-- 3. SEKCJA: MULTIPLAYER LOBBY -->
-        <div id="screen-multi-lobby" class="screen hidden">
-            <h2>Lobby Online</h2>
-            <p>Stwórz pokój lub dołącz do istniejącego.</p>
-            
-            <input type="text" id="player-name" placeholder="Twoje imię (np. Golfiarz99)">
-            <input type="text" id="room-code" placeholder="Kod pokoju (np. GOLF123)">
-
-            <div class="btn-container">
-                <button class="btn-primary" onclick="createRoom()">Stwórz Pokój</button>
-                <button class="btn-secondary" onclick="joinRoom()">Dołącz do Gry</button>
-                <button class="btn-secondary" onclick="showScreen('screen-main')">Powrót</button>
-            </div>
+        <!-- MENU DOŁĄCZANIA -->
+        <div id="join-menu" class="menu hidden">
+            <h2>Wpisz Kod Znajomego:</h2>
+            <input type="text" id="join-id" placeholder="np. abc-123-xyz"><br>
+            <button onclick="connectToHost()">Połącz i Graj</button>
+            <button style="background: #e74c3c;" onclick="location.reload()">Anuluj</button>
         </div>
-
-        <!-- 4. SEKCJA: OCZEKIWANIE NA GRACZY (Multiplayer) -->
-        <div id="screen-multi-wait" class="screen hidden">
-            <h2>Pokój: <span id="current-room-code">---</span></h2>
-            <p>Udostępnij kod znajomym. Czekamy na resztę składu.</p>
-            
-            <div id="player-list" style="margin-bottom: 20px; text-align: left;">
-                <!-- Tu JS będzie dopisywał graczy -->
-                <div>• Ty (Lider)</div>
-            </div>
-
-            <div class="btn-container">
-                <!-- Tylko lider może zacząć -->
-                <button class="btn-primary" onclick="startMultiGame()">Start Gry</button> 
-                <button class="btn-danger" onclick="leaveLobby()">Wyjdź</button>
-            </div>
-        </div>
-
     </div>
 
-    <!-- --- JAVASCRIPT LOGIKA --- -->
+    <div id="hud" class="hidden">
+        Uderzenia: <span id="strokes">0</span> | Gracz: <span id="player-role">---</span>
+    </div>
+    <div id="connection-status">Niepołączony</div>
+
     <script>
-        // -- Konfiguracja i Zmienne Globalne --
-        const canvas = document.getElementById('gameCanvas');
+        const canvas = document.getElementById('golfCanvas');
         const ctx = canvas.getContext('2d');
-        let selectedDifficulty = 'easy';
-        let isGameRunning = false;
+        const hud = document.getElementById('hud');
+        
+        // --- STANY GRY ---
+        let ball = { x: 100, y: 100, vx: 0, vy: 0, radius: 10, friction: 0.98, color: 'white' };
+        let opponentBall = { x: 100, y: 100, vx: 0, vy: 0, radius: 10, color: '#e74c3c' }; // Czerwona piłka wroga
+        let hole = { x: 0, y: 0, radius: 20 };
+        let isDragging = false;
+        let strokes = 0;
         let isMultiplayer = false;
+        let role = 'local'; // 'host', 'guest', 'local'
 
-        // Dopasowanie kanwasa do okna
-        function resizeCanvas() {
+        // --- P2P LOGIKA (PeerJS) ---
+        let peer, conn;
+
+        function initHost() {
+            role = 'host';
+            peer = new Peer(); 
+            peer.on('open', (id) => {
+                document.getElementById('my-id').innerText = id;
+                showMenu('host-menu');
+            });
+            peer.on('connection', (c) => {
+                conn = c;
+                setupConnection();
+            });
+        }
+
+        function showJoinMenu() { showMenu('join-menu'); }
+
+        function connectToHost() {
+            role = 'guest';
+            const targetId = document.getElementById('join-id').value;
+            peer = new Peer();
+            peer.on('open', () => {
+                conn = peer.connect(targetId);
+                setupConnection();
+            });
+        }
+
+        function setupConnection() {
+            conn.on('open', () => {
+                document.getElementById('connection-status').innerText = "POŁĄCZONO";
+                document.getElementById('ui-overlay').classList.add('hidden');
+                hud.classList.remove('hidden');
+                document.getElementById('player-role').innerText = role === 'host' ? "HOST" : "GOŚĆ";
+                isMultiplayer = true;
+                startGame();
+            });
+            conn.on('data', (data) => {
+                if (data.type === 'sync') {
+                    opponentBall.x = data.x;
+                    opponentBall.y = data.y;
+                }
+            });
+        }
+
+        // --- MECHANIKA GOLFA ---
+        function startLocal() {
+            role = 'local';
+            document.getElementById('ui-overlay').classList.add('hidden');
+            hud.classList.remove('hidden');
+            document.getElementById('player-role').innerText = "SOLO";
+            startGame();
+        }
+
+        function startGame() {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
-            if(isGameRunning) drawGamePlaceholder(); // Przerysuj jeśli gra działa
-        }
-        window.addEventListener('resize', resizeCanvas);
-        resizeCanvas();
-
-        // -- Nawigacja między ekranami --
-        function showScreen(screenId) {
-            // Ukryj wszystkie ekrany
-            document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
-            // Pokaż wybrany
-            document.getElementById(screenId).classList.remove('hidden');
+            hole.x = canvas.width - 150;
+            hole.y = canvas.height / 2;
+            ball.y = canvas.height / 2;
+            opponentBall.y = canvas.height / 2;
+            animate();
         }
 
-        // Exit Game logic
-        document.getElementById('exit-game-btn').addEventListener('click', () => {
-            isGameRunning = false;
-            document.getElementById('game-hud').classList.add('hidden');
-            document.getElementById('exit-game-btn').classList.add('hidden');
-            document.getElementById('ui-layer').classList.remove('hidden');
-            showScreen('screen-main');
+        canvas.addEventListener('mousedown', (e) => {
+            if (Math.hypot(e.clientX - ball.x, e.clientY - ball.y) < 30 && ball.vx === 0 && ball.vy === 0) {
+                isDragging = true;
+            }
         });
 
-        // -- Logika Gry Pojedynczej --
-        function selectDifficulty(btn, diff) {
-            document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            selectedDifficulty = diff;
-        }
+        window.addEventListener('mouseup', (e) => {
+            if (isDragging) {
+                ball.vx = (ball.x - e.clientX) * 0.15;
+                ball.vy = (ball.y - e.clientY) * 0.15;
+                strokes++;
+                document.getElementById('strokes').innerText = strokes;
+                isDragging = false;
+            }
+        });
 
-        function startSinglePlayer() {
-            console.log("Start singleplayer. Poziom:", selectedDifficulty);
-            isMultiplayer = false;
-            initGameEngine();
-        }
+        function update() {
+            ball.x += ball.vx; ball.y += ball.vy;
+            ball.vx *= ball.friction; ball.vy *= ball.friction;
+            if (Math.abs(ball.vx) < 0.1) ball.vx = 0;
+            if (Math.abs(ball.vy) < 0.1) ball.vy = 0;
 
-        // -- Logika Multiplayer (Placeholdery) --
-        // Wymaga backendu (np. Node.js + Socket.io)
-        function createRoom() {
-            const name = document.getElementById('player-name').value;
-            const room = document.getElementById('room-code').value;
-            if(!name || !room) return alert("Podaj imię i kod pokoju!");
+            // Ściany
+            if (ball.x < 0 || ball.x > canvas.width) ball.vx *= -0.7;
+            if (ball.y < 0 || ball.y > canvas.height) ball.vy *= -0.7;
 
-            console.log(`Tworzenie pokoju: ${room} dla gracza: ${name}`);
-            document.getElementById('current-room-code').innerText = room;
-            // Tutaj: wyślij zapytanie do serwera przez WebSocket
-            showScreen('screen-multi-wait');
-        }
-
-        function joinRoom() {
-            const name = document.getElementById('player-name').value;
-            const room = document.getElementById('room-code').value;
-            if(!name || !room) return alert("Podaj imię i kod pokoju!");
-
-            console.log(`Dołączanie do pokoju: ${room} jako: ${name}`);
-            // Tutaj: wyślij zapytanie do serwera przez WebSocket
-            // Jeśli serwer potwierdzi:
-            document.getElementById('current-room-code').innerText = room;
-            showScreen('screen-multi-wait');
-        }
-
-        function leaveLobby() {
-            console.log("Opuszczanie lobby");
-            // Tutaj: poinformuj serwer o wyjściu
-            showScreen('screen-multi-lobby');
-        }
-
-        function startMultiGame() {
-            console.log("Start gry multiplayer!");
-            isMultiplayer = true;
-            // Tutaj: Lider wysyła sygnał startu do serwera
-            initGameEngine();
-        }
-
-        // --- SILNIK GRY (PLACEHOLDER) ---
-        // Tutaj w przyszłości znajdzie się logika fizyki, uderzania i renderowania.
-        function initGameEngine() {
-            isGameRunning = true;
-            
-            // Ukryj UI, pokaż HUD gry
-            document.getElementById('ui-layer').classList.add('hidden');
-            document.getElementById('game-hud').classList.remove('hidden');
-            document.getElementById('exit-game-btn').classList.remove('hidden');
-
-            if(isMultiplayer) {
-                document.getElementById('hud-status').classList.remove('hidden');
-            } else {
-                document.getElementById('hud-status').classList.add('hidden');
+            // SYNC DO KOLEGI
+            if (isMultiplayer && conn && conn.open) {
+                conn.send({ type: 'sync', x: ball.x, y: ball.y });
             }
 
-            // Reset statystyk
-            document.getElementById('hud-strokes').innerText = '0';
-            
-            drawGamePlaceholder();
-        }
-
-        // Tymczasowa wizualizacja, póki nie ma silnika gry
-        function drawGamePlaceholder() {
-            if(!isGameRunning) return;
-            
-            // Czyść ekran (Trawa)
-            ctx.fillStyle = '#2ecc71'; 
-            ctx.fillRect(0, 0, width, height);
-
-            // Rysuj Piasek (Bunkier) - placeholder zależny od trudności
-            ctx.fillStyle = '#f1c40f';
-            if(selectedDifficulty === 'easy') ctx.fillRect(width*0.6, height*0.3, 100, 200);
-            if(selectedDifficulty === 'hard') ctx.fillRect(width*0.2, height*0.2, 300, 300);
-
-            // Rysuj Dołek (Flaga)
-            ctx.beginPath();
-            ctx.arc(width * 0.8, height * 0.5, 15, 0, Math.PI * 2);
-            ctx.fillStyle = '#000';
-            ctx.fill();
-            
-            ctx.fillStyle = '#e74c3c'; // Czerwona flaga
-            ctx.fillRect(width * 0.8, height * 0.5 - 60, 40, 30);
-            ctx.fillStyle = '#fff'; // Maszt
-            ctx.fillRect(width * 0.8, height * 0.5 - 60, 3, 60);
-
-            // Rysuj Piłeczkę
-            ctx.beginPath();
-            ctx.arc(width * 0.2, height * 0.5, 10, 0, Math.PI * 2);
-            ctx.fillStyle = '#fff';
-            ctx.fill();
-            ctx.strokeStyle = '#ccc';
-            ctx.stroke();
-
-            ctx.fillStyle = "rgba(255,255,255,0.7)";
-            ctx.font = "20px Segoe UI";
-            ctx.textAlign = "center";
-            ctx.fillText("Tutaj będzie działać gra (Fizyka, sterowanie JS)", width/2, height/2);
-            if(isMultiplayer) {
-                 ctx.fillText("(Tryb Multiplayer Aktywny)", width/2, height/2 + 30);
+            if (Math.hypot(ball.x - hole.x, ball.y - hole.y) < hole.radius && Math.abs(ball.vx) < 1) {
+                alert("Wygrałeś!");
+                location.reload();
             }
         }
 
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            // Dołek
+            ctx.fillStyle = 'black'; ctx.beginPath(); ctx.arc(hole.x, hole.y, hole.radius, 0, Math.PI*2); ctx.fill();
+            // Przeciwnik
+            if(isMultiplayer) {
+                ctx.fillStyle = opponentBall.color; ctx.globalAlpha = 0.6;
+                ctx.beginPath(); ctx.arc(opponentBall.x, opponentBall.y, opponentBall.radius, 0, Math.PI*2); ctx.fill();
+                ctx.globalAlpha = 1.0;
+            }
+            // Ty
+            ctx.fillStyle = ball.color; ctx.beginPath(); ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI*2); ctx.fill();
+        }
+
+        function animate() {
+            update(); draw(); requestAnimationFrame(animate);
+        }
+
+        function showMenu(id) {
+            document.querySelectorAll('.menu').forEach(m => m.classList.add('hidden'));
+            document.getElementById(id).classList.remove('hidden');
+        }
     </script>
 </body>
 </html>
