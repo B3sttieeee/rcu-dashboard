@@ -2,199 +2,287 @@
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <title>Golf Online P2P | B3sttieeee</title>
+    <title>B3sttieeee | Pro Golf 3D Online</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://unpkg.com/peerjs@1.3.1/dist/peerjs.min.js"></script>
     <style>
-        :root { --p-green: #2ecc71; --p-dark: #1a1a2e; }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;900&display=swap');
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background: var(--p-dark); color: white; font-family: sans-serif; overflow: hidden; }
-        canvas { display: block; background: #27ae60; cursor: crosshair; }
+        body { background: #050505; color: white; font-family: 'Inter', sans-serif; overflow: hidden; }
         
-        #ui-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10; display: flex; justify-content: center; align-items: center; }
-        .menu { background: rgba(0,0,0,0.9); padding: 30px; border-radius: 20px; text-align: center; border: 2px solid var(--p-green); pointer-events: auto; }
+        /* UI OVERLAY */
+        #ui { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10; }
+        .glass { 
+            background: rgba(0,0,0,0.6); backdrop-filter: blur(15px); 
+            border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; 
+            pointer-events: auto; text-align: center;
+        }
+        .menu { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); padding: 40px; width: 400px; }
         .hidden { display: none !important; }
         
-        button { padding: 10px 20px; margin: 5px; border: none; border-radius: 5px; background: var(--p-green); font-weight: bold; cursor: pointer; }
-        input { padding: 10px; border-radius: 5px; border: none; margin-bottom: 10px; width: 200px; }
+        /* HUD */
+        #hud { position: fixed; top: 20px; left: 20px; padding: 15px 30px; display: flex; gap: 20px; align-items: center; }
+        #power-bar { 
+            position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%); 
+            width: 300px; height: 10px; background: rgba(255,255,255,0.1); border-radius: 5px; overflow: hidden;
+        }
+        #power-fill { width: 0%; height: 100%; background: linear-gradient(90deg, #2ecc71, #f1c40f, #e74c3c); transition: width 0.1s; }
+
+        button { 
+            padding: 12px 25px; margin: 10px; border: none; border-radius: 50px; 
+            background: #fff; color: #000; font-weight: 900; cursor: pointer; transition: 0.3s; text-transform: uppercase; font-size: 0.8rem;
+        }
+        button:hover { transform: scale(1.05); box-shadow: 0 0 20px rgba(255,255,255,0.4); }
+        input { padding: 12px; border-radius: 10px; border: none; margin-bottom: 15px; width: 100%; background: #222; color: #fff; text-align: center; }
         
-        #hud { position: fixed; top: 20px; left: 20px; font-weight: bold; background: rgba(0,0,0,0.5); padding: 10px; border-radius: 10px; }
-        #connection-status { position: fixed; top: 20px; right: 20px; font-size: 0.8rem; color: #aaa; }
+        .status { position: fixed; top: 20px; right: 20px; font-size: 0.7rem; letter-spacing: 2px; opacity: 0.5; }
     </style>
 </head>
 <body>
 
-    <canvas id="golfCanvas"></canvas>
-
-    <div id="ui-overlay">
-        <!-- MENU GŁÓWNE -->
-        <div id="main-menu" class="menu">
-            <h1>GOLF P2P</h1>
-            <p style="margin-bottom: 20px;">Graj lokalnie lub ze znajomym</p>
-            <button onclick="startLocal()">Graj Sam (Trening)</button>
-            <hr style="margin: 20px; border-color: #333;">
-            <button style="background: #3498db;" onclick="initHost()">Stwórz Pokój (Host)</button>
-            <button style="background: #9b59b6;" onclick="showJoinMenu()">Dołącz do znajomego</button>
+    <div id="ui">
+        <div id="main-menu" class="menu glass">
+            <h1 style="letter-spacing: 5px; margin-bottom: 20px;">GOLF 3D</h1>
+            <button onclick="startSingle()">Kariera Solo</button>
+            <hr style="opacity: 0.1; margin: 20px;">
+            <button style="background: #2ecc71" onclick="initHost()">Stwórz Pokój</button>
+            <button style="background: #8e44ad" onclick="showJoin()">Dołącz do Gry</button>
         </div>
 
-        <!-- MENU HOSTA -->
-        <div id="host-menu" class="menu hidden">
-            <h2>Twój Kod Pokoju:</h2>
-            <h1 id="my-id" style="color: #f1c40f; margin: 20px 0;">Ładowanie...</h1>
-            <p>Wyślij ten kod znajomemu.</p>
-            <p id="wait-msg">Czekanie na połączenie...</p>
+        <div id="join-menu" class="menu glass hidden">
+            <h3>Wpisz ID Hosta</h3>
+            <input type="text" id="target-id" placeholder="...">
+            <button onclick="joinGame()">Połącz</button>
+            <button onclick="location.reload()" style="background: #e74c3c">Wróć</button>
         </div>
 
-        <!-- MENU DOŁĄCZANIA -->
-        <div id="join-menu" class="menu hidden">
-            <h2>Wpisz Kod Znajomego:</h2>
-            <input type="text" id="join-id" placeholder="np. abc-123-xyz"><br>
-            <button onclick="connectToHost()">Połącz i Graj</button>
-            <button style="background: #e74c3c;" onclick="location.reload()">Anuluj</button>
+        <div id="host-menu" class="menu glass hidden">
+            <h3>Twoje ID Pokoju</h3>
+            <h2 id="my-id" style="color: #2ecc71; margin: 15px 0;">---</h2>
+            <p style="font-size: 0.7rem; opacity: 0.6;">Czekamy na drugiego gracza...</p>
         </div>
+
+        <div id="hud" class="glass hidden">
+            <div>RUNDA: <span id="round-txt">1</span></div>
+            <div style="color: #2ecc71">STROKES: <span id="strokes-txt">0</span></div>
+        </div>
+
+        <div id="power-bar" class="hidden"><div id="power-fill"></div></div>
     </div>
 
-    <div id="hud" class="hidden">
-        Uderzenia: <span id="strokes">0</span> | Gracz: <span id="player-role">---</span>
-    </div>
-    <div id="connection-status">Niepołączony</div>
+    <div class="status" id="conn-status">SYSTEM OFFLINE</div>
 
-    <script>
-        const canvas = document.getElementById('golfCanvas');
-        const ctx = canvas.getContext('2d');
-        const hud = document.getElementById('hud');
-        
-        // --- STANY GRY ---
-        let ball = { x: 100, y: 100, vx: 0, vy: 0, radius: 10, friction: 0.98, color: 'white' };
-        let opponentBall = { x: 100, y: 100, vx: 0, vy: 0, radius: 10, color: '#e74c3c' }; // Czerwona piłka wroga
-        let hole = { x: 0, y: 0, radius: 20 };
-        let isDragging = false;
-        let strokes = 0;
-        let isMultiplayer = false;
-        let role = 'local'; // 'host', 'guest', 'local'
+    <script type="module">
+        import * as THREE from 'https://cdn.skypack.dev/three@0.132.2';
 
-        // --- P2P LOGIKA (PeerJS) ---
-        let peer, conn;
+        // --- KONFIGURACJA MAP ---
+        const levels = [
+            { ball: [-300, 10, 0], hole: [300, 0, 0], walls: [[0, 20, 0, 20, 40, 200]] }, // Runda 1
+            { ball: [-350, 10, 0], hole: [350, 0, 0], walls: [[0, 20, 50, 20, 40, 300], [0, 20, -50, 20, 40, 300]] }, // Runda 2
+            { ball: [-400, 10, 200], hole: [400, 0, -200], walls: [[100, 20, 100, 100, 40, 400], [-100, 20, -100, 100, 40, 400]] } // Runda 3
+        ];
 
-        function initHost() {
-            role = 'host';
-            peer = new Peer(); 
-            peer.on('open', (id) => {
-                document.getElementById('my-id').innerText = id;
-                showMenu('host-menu');
-            });
-            peer.on('connection', (c) => {
-                conn = c;
-                setupConnection();
-            });
-        }
+        let currentLevel = 0;
+        let scene, camera, renderer, ball, opponentBall, hole, ground;
+        let isMoving = false, power = 0, isCharging = false;
+        let peer, conn, role = 'local', strokes = 0;
 
-        function showJoinMenu() { showMenu('join-menu'); }
+        // --- INIT THREE.JS ---
+        function initScene() {
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x050505);
+            camera = new THREE.PerspectiveCamera(60, window.innerWidth/window.innerHeight, 1, 5000);
+            camera.position.set(0, 400, 600);
 
-        function connectToHost() {
-            role = 'guest';
-            const targetId = document.getElementById('join-id').value;
-            peer = new Peer();
-            peer.on('open', () => {
-                conn = peer.connect(targetId);
-                setupConnection();
-            });
-        }
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            document.body.appendChild(renderer.domElement);
 
-        function setupConnection() {
-            conn.on('open', () => {
-                document.getElementById('connection-status').innerText = "POŁĄCZONO";
-                document.getElementById('ui-overlay').classList.add('hidden');
-                hud.classList.remove('hidden');
-                document.getElementById('player-role').innerText = role === 'host' ? "HOST" : "GOŚĆ";
-                isMultiplayer = true;
-                startGame();
-            });
-            conn.on('data', (data) => {
-                if (data.type === 'sync') {
-                    opponentBall.x = data.x;
-                    opponentBall.y = data.y;
-                }
-            });
-        }
+            const ambient = new THREE.AmbientLight(0xffffff, 0.4);
+            scene.add(ambient);
+            const sun = new THREE.DirectionalLight(0xffffff, 0.8);
+            sun.position.set(100, 500, 100);
+            scene.add(sun);
 
-        // --- MECHANIKA GOLFA ---
-        function startLocal() {
-            role = 'local';
-            document.getElementById('ui-overlay').classList.add('hidden');
-            hud.classList.remove('hidden');
-            document.getElementById('player-role').innerText = "SOLO";
-            startGame();
-        }
+            // Podłoże
+            const gGeo = new THREE.BoxGeometry(1200, 10, 800);
+            const gMat = new THREE.MeshPhongMaterial({ color: 0x27ae60 });
+            ground = new THREE.Mesh(gGeo, gMat);
+            ground.position.y = -5;
+            scene.add(ground);
 
-        function startGame() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-            hole.x = canvas.width - 150;
-            hole.y = canvas.height / 2;
-            ball.y = canvas.height / 2;
-            opponentBall.y = canvas.height / 2;
+            // Piłka gracza
+            const bGeo = new THREE.SphereGeometry(10, 32, 32);
+            const bMat = new THREE.MeshPhongMaterial({ color: 0xffffff });
+            ball = new THREE.Mesh(bGeo, bMat);
+            ball.velocity = new THREE.Vector3();
+            scene.add(ball);
+
+            // Piłka przeciwnika
+            opponentBall = new THREE.Mesh(bGeo, new THREE.MeshPhongMaterial({ color: 0xff4444, transparent: true, opacity: 0.6 }));
+            opponentBall.visible = false;
+            scene.add(opponentBall);
+
+            // Dołek
+            const hGeo = new THREE.CylinderGeometry(20, 20, 2, 32);
+            const hMat = new THREE.MeshBasicMaterial({ color: 0x000000 });
+            hole = new THREE.Mesh(hGeo, hMat);
+            scene.add(hole);
+
+            setupLevel(0);
             animate();
         }
 
-        canvas.addEventListener('mousedown', (e) => {
-            if (Math.hypot(e.clientX - ball.x, e.clientY - ball.y) < 30 && ball.vx === 0 && ball.vy === 0) {
-                isDragging = true;
+        function setupLevel(n) {
+            if(n >= levels.length) {
+                alert("GRATULACJE! UKOŃCZYŁEŚ GRĘ!");
+                location.reload();
+                return;
+            }
+            const lvl = levels[n];
+            ball.position.set(...lvl.ball);
+            ball.velocity.set(0,0,0);
+            hole.position.set(...lvl.hole);
+            
+            // Czyść stare ściany
+            scene.children = scene.children.filter(c => !c.isWall);
+            lvl.walls.forEach(w => {
+                const wGeo = new THREE.BoxGeometry(w[3], w[4], w[5]);
+                const wMat = new THREE.MeshPhongMaterial({ color: 0x333333 });
+                const wall = new THREE.Mesh(wGeo, wMat);
+                wall.position.set(w[0], w[1], w[2]);
+                wall.isWall = true;
+                scene.add(wall);
+            });
+
+            document.getElementById('round-txt').innerText = n + 1;
+        }
+
+        // --- LOGIKA MULTIPLAYER ---
+        window.initHost = () => {
+            peer = new Peer();
+            peer.on('open', id => {
+                document.getElementById('my-id').innerText = id;
+                document.getElementById('main-menu').classList.add('hidden');
+                document.getElementById('host-menu').classList.remove('hidden');
+            });
+            peer.on('connection', c => {
+                conn = c;
+                role = 'host';
+                startMulti();
+            });
+        };
+
+        window.showJoin = () => {
+            document.getElementById('main-menu').classList.add('hidden');
+            document.getElementById('join-menu').classList.remove('hidden');
+        };
+
+        window.joinGame = () => {
+            const id = document.getElementById('target-id').value;
+            peer = new Peer();
+            peer.on('open', () => {
+                conn = peer.connect(id);
+                role = 'guest';
+                startMulti();
+            });
+        };
+
+        function startMulti() {
+            conn.on('open', () => {
+                document.getElementById('ui').classList.add('hidden');
+                document.getElementById('hud').classList.remove('hidden');
+                document.getElementById('conn-status').innerText = "LIVE MULTI";
+                opponentBall.visible = true;
+                initScene();
+            });
+            conn.on('data', data => {
+                if(data.type === 'sync') {
+                    opponentBall.position.set(data.x, data.y, data.z);
+                }
+                if(data.type === 'next') setupLevel(data.lvl);
+            });
+        }
+
+        window.startSingle = () => {
+            document.getElementById('ui').classList.add('hidden');
+            document.getElementById('hud').classList.remove('hidden');
+            initScene();
+        };
+
+        // --- STEROWANIE I FIZYKA ---
+        window.addEventListener('mousedown', () => {
+            if(ball.velocity.length() < 0.2) {
+                isCharging = true;
+                power = 0;
+                document.getElementById('power-bar').classList.remove('hidden');
             }
         });
 
         window.addEventListener('mouseup', (e) => {
-            if (isDragging) {
-                ball.vx = (ball.x - e.clientX) * 0.15;
-                ball.vy = (ball.y - e.clientY) * 0.15;
+            if(isCharging) {
+                isCharging = false;
+                document.getElementById('power-bar').classList.add('hidden');
+                
+                // Oblicz kierunek od środka ekranu
+                const dir = new THREE.Vector3(
+                    (window.innerWidth/2 - e.clientX) * 0.1,
+                    0,
+                    (window.innerHeight/2 - e.clientY) * 0.1
+                );
+                
+                ball.velocity.copy(dir.multiplyScalar(power * 0.1));
                 strokes++;
-                document.getElementById('strokes').innerText = strokes;
-                isDragging = false;
+                document.getElementById('strokes-txt').innerText = strokes;
             }
         });
 
-        function update() {
-            ball.x += ball.vx; ball.y += ball.vy;
-            ball.vx *= ball.friction; ball.vy *= ball.friction;
-            if (Math.abs(ball.vx) < 0.1) ball.vx = 0;
-            if (Math.abs(ball.vy) < 0.1) ball.vy = 0;
-
-            // Ściany
-            if (ball.x < 0 || ball.x > canvas.width) ball.vx *= -0.7;
-            if (ball.y < 0 || ball.y > canvas.height) ball.vy *= -0.7;
-
-            // SYNC DO KOLEGI
-            if (isMultiplayer && conn && conn.open) {
-                conn.send({ type: 'sync', x: ball.x, y: ball.y });
-            }
-
-            if (Math.hypot(ball.x - hole.x, ball.y - hole.y) < hole.radius && Math.abs(ball.vx) < 1) {
-                alert("Wygrałeś!");
-                location.reload();
-            }
-        }
-
-        function draw() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            // Dołek
-            ctx.fillStyle = 'black'; ctx.beginPath(); ctx.arc(hole.x, hole.y, hole.radius, 0, Math.PI*2); ctx.fill();
-            // Przeciwnik
-            if(isMultiplayer) {
-                ctx.fillStyle = opponentBall.color; ctx.globalAlpha = 0.6;
-                ctx.beginPath(); ctx.arc(opponentBall.x, opponentBall.y, opponentBall.radius, 0, Math.PI*2); ctx.fill();
-                ctx.globalAlpha = 1.0;
-            }
-            // Ty
-            ctx.fillStyle = ball.color; ctx.beginPath(); ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI*2); ctx.fill();
-        }
-
         function animate() {
-            update(); draw(); requestAnimationFrame(animate);
+            requestAnimationFrame(animate);
+            
+            if(isCharging) {
+                power = Math.min(power + 1.5, 100);
+                document.getElementById('power-fill').style.width = power + "%";
+            }
+
+            // Fizyka
+            ball.position.add(ball.velocity);
+            ball.velocity.multiplyScalar(0.98); // Tarcie
+
+            // Detekcja ścian
+            scene.children.forEach(c => {
+                if(c.isWall) {
+                    const box = new THREE.Box3().setFromObject(c);
+                    if(box.containsPoint(ball.position)) {
+                        ball.velocity.reflect(new THREE.Vector3(1,0,0)); // Uproszczone odbicie
+                        ball.position.add(ball.velocity);
+                    }
+                }
+            });
+
+            // Wpadnięcie do dołka
+            const dist = ball.position.distanceTo(hole.position);
+            if(dist < 25 && ball.velocity.length() < 2) {
+                currentLevel++;
+                if(conn) conn.send({ type: 'next', lvl: currentLevel });
+                setupLevel(currentLevel);
+            }
+
+            // Sync Multi
+            if(conn && conn.open) {
+                conn.send({ type: 'sync', x: ball.position.x, y: ball.position.y, z: ball.position.z });
+            }
+
+            camera.lookAt(ball.position);
+            renderer.render(scene, camera);
         }
 
-        function showMenu(id) {
-            document.querySelectorAll('.menu').forEach(m => m.classList.add('hidden'));
-            document.getElementById(id).classList.remove('hidden');
-        }
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
     </script>
 </body>
 </html>
