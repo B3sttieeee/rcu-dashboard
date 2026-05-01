@@ -3,55 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Putt Master 3D | Discord Style</title>
+    <title>PUTT MASTER 2026 | Ultimate 3D</title>
     <link rel="stylesheet" href="css/style.css">
-    <!-- Biblioteki -->
+    <!-- Biblioteki High-End -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://unpkg.com/peerjs@1.3.1/dist/peerjs.min.js"></script>
 </head>
 <body>
     <div id="canvas-container"></div>
 
-    <!-- UI LAYER -->
-    <div id="gui">
-        <div id="menu-main" class="panel">
-            <h1 class="neon-text">PUTT PARTY</h1>
-            <p>Wymiar 3D - Sezon 2026x2</p>
-            <div class="actions">
-                <button onclick="Game.startSingle()">SOLO CAREER</button>
-                <button class="btn-alt" onclick="Multi.initHost()">HOST LOBBY</button>
-                <button class="btn-alt" onclick="UI.showJoin()">JOIN FRIEND</button>
+    <div id="ui">
+        <!-- Overlay startowy -->
+        <div id="menu-main" class="glass-panel">
+            <h1 class="glitch" data-text="PUTT PARTY">PUTT PARTY</h1>
+            <div class="menu-content">
+                <button onclick="Game.start()">SINGLE PLAYER</button>
+                <button class="secondary" onclick="Multi.initHost()">HOST ROOM</button>
+                <button class="secondary" onclick="UI.showJoin()">JOIN FRIENDS</button>
             </div>
         </div>
 
-        <div id="menu-join" class="panel hidden">
-            <h3>ENTER LOBBY ID</h3>
-            <input type="text" id="join-id" placeholder="Paste code here...">
-            <button onclick="Multi.joinGame()">CONNECT</button>
-            <button class="btn-back" onclick="UI.showMain()">BACK</button>
+        <!-- HUD podczas gry -->
+        <div id="game-hud" class="hidden">
+            <div class="hud-top">
+                <div class="hud-card">HOLE <span id="val-hole">1</span></div>
+                <div class="hud-card accent">STROKES <span id="val-strokes">0</span></div>
+            </div>
+            <div class="power-container">
+                <div id="power-bar"></div>
+            </div>
         </div>
 
-        <div id="menu-host" class="panel hidden">
-            <h3>YOUR ROOM ID</h3>
-            <div id="my-id" class="id-badge">GENERATING...</div>
-            <p>Waiting for opponent...</p>
-        </div>
-
-        <!-- HUD -->
-        <div id="hud" class="hidden">
-            <div class="stats-box">
-                <span id="label-hole">HOLE: 1/9</span>
-                <span id="label-strokes" class="highlight">STROKES: 0</span>
-            </div>
-            <div id="power-meter">
-                <div id="power-fill"></div>
-            </div>
+        <!-- Menu dołączania -->
+        <div id="menu-join" class="glass-panel hidden">
+            <h2>ENTER LOBBY CODE</h2>
+            <input type="text" id="join-id" placeholder="...">
+            <button onclick="Multi.join()">CONNECT</button>
+            <button class="danger" onclick="location.reload()">BACK</button>
         </div>
     </div>
 
-    <!-- Moduły JS -->
-    <script src="js/multiplayer.js"></script>
+    <!-- Skrypty -->
     <script src="js/physics.js"></script>
+    <script src="js/multiplayer.js"></script>
     <script src="js/main.js"></script>
 </body>
 </html>
