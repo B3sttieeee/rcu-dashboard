@@ -3,37 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ALPHA 1v1 | Next-Gen Web Combat</title>
-    <link rel="stylesheet" href="./style.css">
+    <title>ALPHA 1v1 | Professional Build</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <!-- Kontener na grę 3D -->
     <div id="app"></div>
 
-    <!-- UI LAYER -->
+    <!-- Warstwa UI -->
     <div id="ui">
+        <!-- Celownik -->
         <div class="crosshair"></div>
         
+        <!-- Statystyki -->
         <div id="stats">
             <div class="hp-bar"><div id="hp-fill"></div></div>
-            <div class="ammo">30 / ∞</div>
+            <div class="ammo">BUILD MODE</div>
         </div>
 
+        <!-- Ekwipunek (Sloty budowania) -->
         <div id="inventory">
-            <div class="slot active" data-slot="1">1</div>
-            <div class="slot" data-slot="2">2</div>
-            <div class="slot" data-slot="3">3</div>
-            <div class="slot" data-slot="4">🔨</div>
+            <div class="slot active" id="slot-q">Q: ŚCIANA</div>
+            <div class="slot" id="slot-e">E: PODŁOGA</div>
         </div>
 
+        <!-- Ekran startowy (Kliknij, aby zacząć) -->
         <div id="overlay">
             <div class="menu-card">
                 <h1>ALPHA 1V1</h1>
-                <button id="btn-start">WEJDŹ DO GRY</button>
-                <button id="btn-multi" class="btn-sec">MULTIPLAYER</button>
+                <p>KLIKNIJ EKRAN, ABY ZACZĄĆ</p>
+                <div class="controls-hint">
+                    WSAD - Ruch | MYSZKA - Rozglądanie | SPACJA - Skok<br>
+                    Q / E - Zmiana trybu budowania | LPM - Postaw
+                </div>
             </div>
         </div>
     </div>
 
-    <script type="module" src="./main.js"></script>
+    <!-- Ładowanie silnika -->
+    <script type="module" src="/src/main.js"></script>
 </body>
 </html>
