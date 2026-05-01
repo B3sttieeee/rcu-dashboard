@@ -1,192 +1,146 @@
-/* --- RESET I BAZA --- */
+/* --- BAZA --- */
 * { margin: 0; padding: 0; box-sizing: border-box; }
-
 html { scroll-behavior: smooth; }
-
 body {
     background-color: #020204;
     color: #e2e8f0;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     overflow-x: hidden;
-    line-height: 1.6;
 }
 
-/* --- TŁO CANVAS (KOSMOS) --- */
-#space-canvas {
+/* --- PERFEKCYJNY KOSMOS (WARSTWA TŁA) --- */
+.universe-bg {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
     z-index: -10;
-    background: radial-gradient(circle at 50% 50%, #0a0a16 0%, #020204 100%);
+    background: #010103;
+    overflow: hidden;
+}
+
+#space-canvas {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 1;
+}
+
+/* Kolorowe Mgławice */
+.nebula {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(120px);
+    opacity: 0.6;
+    animation: drift 15s infinite alternate ease-in-out;
+    z-index: 2;
+}
+.nebula-1 {
+    width: 70vw; height: 70vw;
+    background: rgba(100, 30, 230, 0.25);
+    top: -20%; left: -20%;
+}
+.nebula-2 {
+    width: 60vw; height: 60vw;
+    background: rgba(40, 10, 120, 0.4);
+    bottom: -20%; right: -10%;
+    animation-delay: -7s;
+}
+@keyframes drift {
+    0% { transform: scale(1) translate(0, 0); }
+    100% { transform: scale(1.1) translate(50px, 30px); }
+}
+
+/* ZAAWANSOWANA CZARNA DZIURA 3D */
+.black-hole-wrapper {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 3;
+}
+
+/* Obracający się dysk świetlny wokół dziury (jak w filmie Interstellar) */
+.accretion-disk {
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 600px; height: 600px;
+    border-radius: 50%;
+    background: conic-gradient(from 0deg, rgba(138, 43, 226, 0.1), rgba(255, 255, 255, 0.8), rgba(138, 43, 226, 0.1), rgba(255, 255, 255, 0.8), rgba(138, 43, 226, 0.1));
+    filter: blur(15px);
+    transform: translate(-50%, -50%) rotateX(75deg);
+    animation: spin-disk 10s linear infinite;
+    z-index: 1;
+}
+
+/* Sama kula czarnej dziury */
+.black-hole {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 250px; height: 250px;
+    background: #000;
+    border-radius: 50%;
+    box-shadow: 
+        0 0 50px 15px rgba(138, 43, 226, 0.6), 
+        inset 0 0 20px 5px rgba(255, 255, 255, 0.15);
+    z-index: 2;
+}
+
+@keyframes spin-disk {
+    100% { transform: translate(-50%, -50%) rotateX(75deg) rotateZ(360deg); }
 }
 
 /* --- NAWIGACJA --- */
 nav {
-    position: fixed;
-    top: 0;
-    width: 100%;
-    background: rgba(2, 2, 4, 0.8);
-    backdrop-filter: blur(10px);
-    border-bottom: 1px solid rgba(138, 43, 226, 0.3);
-    z-index: 100;
-    padding: 15px 0;
+    position: fixed; top: 0; width: 100%;
+    background: rgba(2, 2, 4, 0.7); backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(138, 43, 226, 0.3); z-index: 100; padding: 15px 0;
 }
-
-.nav-content {
-    max-width: 1100px;
-    margin: 0 auto;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 20px;
-}
-
-.logo {
-    font-weight: 800;
-    font-size: 1.2rem;
-    letter-spacing: 2px;
-    background: linear-gradient(90deg, #fff, #8a2be2);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-}
-
+.nav-content { max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; }
+.logo { font-weight: 800; font-size: 1.2rem; letter-spacing: 2px; color: #fff; text-shadow: 0 0 10px #8a2be2; }
 nav ul { list-style: none; display: flex; gap: 30px; }
-nav a {
-    color: #a0aec0; text-decoration: none; font-size: 0.9rem;
-    text-transform: uppercase; letter-spacing: 1px; transition: 0.3s;
-}
+nav a { color: #a0aec0; text-decoration: none; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; }
 nav a:hover { color: #fff; text-shadow: 0 0 10px rgba(138, 43, 226, 0.8); }
 
-/* --- UKŁAD GŁÓWNY --- */
-main {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-}
-
-section {
-    min-height: 100vh;
-    width: 100%;
-    max-width: 1100px;
-    padding: 100px 20px 20px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    position: relative;
-}
+/* --- UKŁAD TREŚCI --- */
+main { display: flex; flex-direction: column; align-items: center; width: 100%; position: relative; z-index: 10; }
+section { min-height: 100vh; width: 100%; max-width: 1100px; padding: 100px 20px 20px; display: flex; flex-direction: column; justify-content: center; align-items: center; }
 
 .section-header { text-align: center; margin-bottom: 50px; }
-h1 { font-size: 3.5rem; font-weight: 800; line-height: 1.1; margin-bottom: 20px; color: #fff; text-shadow: 0 0 20px rgba(138, 43, 226, 0.8); }
+h1 { font-size: 4rem; font-weight: 800; margin-bottom: 20px; color: #fff; text-shadow: 0 0 20px rgba(138, 43, 226, 0.9); }
 h2 { font-size: 2.5rem; font-weight: 700; margin-bottom: 15px; color: #fff; text-shadow: 0 0 15px rgba(138, 43, 226, 0.8); }
-p { font-size: 1.1rem; color: #94a3b8; max-width: 600px; margin: 0 auto; }
+p { font-size: 1.2rem; color: #ccc; max-width: 600px; margin: 0 auto 20px; text-shadow: 0 0 5px rgba(0,0,0,0.8); }
 
-/* --- CZARNA DZIURA --- */
-.hero-section { position: relative; }
-
-.black-hole-container {
-    position: absolute;
-    top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
-    width: 100%; height: 100%;
-    display: flex; justify-content: center; align-items: center;
-    z-index: -1; pointer-events: none;
-}
-
-.black-hole {
-    width: 350px; height: 350px;
-    background: #000;
-    border-radius: 50%;
-    box-shadow: 
-        0 0 60px 10px rgba(138, 43, 226, 0.5), 
-        0 0 150px 40px rgba(25, 0, 50, 0.8),
-        inset 0 0 20px 5px rgba(255, 255, 255, 0.1);
-    animation: hole-breathe 6s infinite alternate ease-in-out;
-}
-
-@keyframes hole-breathe {
-    0% { transform: scale(0.95); box-shadow: 0 0 50px 10px rgba(138, 43, 226, 0.4), 0 0 120px 30px rgba(25, 0, 50, 0.6); }
-    100% { transform: scale(1.05); box-shadow: 0 0 80px 20px rgba(138, 43, 226, 0.7), 0 0 180px 60px rgba(25, 0, 50, 0.9); }
-}
-
-.hero-content {
-    text-align: center;
-    z-index: 1;
-    background: rgba(0, 0, 0, 0.6);
-    padding: 40px;
+/* --- SZKLANE PANELE --- */
+.hero-content, .glass-card, .glass-panel {
+    background: rgba(10, 10, 18, 0.5);
+    border: 1px solid rgba(138, 43, 226, 0.4);
+    backdrop-filter: blur(15px);
     border-radius: 20px;
-    backdrop-filter: blur(8px);
-    border: 1px solid rgba(138, 43, 226, 0.3);
-}
-
-/* --- KARTY I PANELE --- */
-.cards-container {
-    display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; width: 100%;
-}
-
-.glass-card, .glass-panel {
-    background: rgba(20, 20, 35, 0.6);
-    border: 1px solid rgba(138, 43, 226, 0.3);
-    backdrop-filter: blur(12px);
-    border-radius: 24px;
-    padding: 40px 30px;
+    padding: 40px;
     text-align: center;
-    position: relative;
-    overflow: hidden;
-    transition: transform 0.3s ease, border-color 0.3s ease;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+    transition: transform 0.3s ease;
 }
 
+.hero-content { margin-top: 250px; } /* Zsuwa panel w dół, żeby czarna dziura była widoczna */
+.cards-container { display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; width: 100%; }
 .glass-card { width: 320px; }
 .glass-panel { max-width: 700px; padding: 60px 40px; }
 
-.glass-card:hover, .glass-panel:hover {
-    transform: translateY(-8px);
-    border-color: rgba(138, 43, 226, 0.8);
-}
-
-/* Blask kart */
-.card-glow {
-    position: absolute; width: 150px; height: 150px;
-    background: rgba(138, 43, 226, 0.3);
-    border-radius: 50%; filter: blur(40px);
-    top: -50px; right: -50px; z-index: -1;
-    transition: 0.3s;
-}
-.glass-card:hover .card-glow { background: rgba(138, 43, 226, 0.6); }
+.glass-card:hover, .glass-panel:hover { transform: translateY(-10px); border-color: #8a2be2; box-shadow: 0 25px 60px rgba(138, 43, 226, 0.3); }
 
 /* --- AWATARY --- */
-.avatar {
-    width: 110px !important;
-    height: 110px !important;
-    border-radius: 50% !important;
-    object-fit: cover !important;
-    border: 3px solid #8a2be2;
-    margin-bottom: 20px;
-    box-shadow: 0 0 20px rgba(138, 43, 226, 0.6);
-    display: inline-block;
-}
+.avatar { width: 120px !important; height: 120px !important; border-radius: 50% !important; object-fit: cover !important; border: 3px solid #8a2be2; margin-bottom: 20px; box-shadow: 0 0 20px rgba(138, 43, 226, 0.8); }
 
-.glass-card h3 { font-size: 1.4rem; margin-bottom: 10px; color: #fff; }
-.tag { display: inline-block; background: rgba(138, 43, 226, 0.2); color: #fff; padding: 6px 14px; border-radius: 20px; font-size: 0.9rem; border: 1px solid rgba(138, 43, 226, 0.5); font-weight: bold; }
-.desc { font-size: 0.95rem; margin-bottom: 25px; color: #ccc; }
+.glass-card h3 { font-size: 1.5rem; margin-bottom: 15px; color: #fff; }
+.tag { display: inline-block; background: rgba(138, 43, 226, 0.3); color: #fff; padding: 8px 16px; border-radius: 20px; font-weight: bold; }
+.desc { margin-bottom: 25px; }
 
 /* --- PRZYCISKI --- */
-.btn {
-    display: inline-block;
-    padding: 14px 28px; border-radius: 30px; font-weight: bold; font-size: 0.95rem;
-    text-decoration: none; transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 1px;
-    margin-top: 15px; border: 2px solid transparent;
-}
-
-.primary-btn { background: #8a2be2; color: #fff; box-shadow: 0 0 20px rgba(138, 43, 226, 0.6); }
-.primary-btn:hover { background: transparent; border-color: #8a2be2; box-shadow: 0 0 30px rgba(138, 43, 226, 0.9); transform: translateY(-2px); }
-
+.btn { display: inline-block; padding: 14px 30px; border-radius: 30px; font-weight: bold; text-decoration: none; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px; border: 2px solid transparent; }
+.primary-btn { background: #8a2be2; color: #fff; box-shadow: 0 0 20px rgba(138, 43, 226, 0.7); }
+.primary-btn:hover { background: transparent; border-color: #8a2be2; transform: translateY(-3px); }
 .secondary-btn { background: transparent; color: #fff; border-color: #8a2be2; }
-.secondary-btn:hover { background: #8a2be2; box-shadow: 0 0 20px rgba(138, 43, 226, 0.6); transform: translateY(-2px); }
-
+.secondary-btn:hover { background: #8a2be2; box-shadow: 0 0 20px rgba(138, 43, 226, 0.7); transform: translateY(-3px); }
 .github-btn { background: #fff; color: #000; }
-.github-btn:hover { background: #e2e8f0; transform: translateY(-2px); box-shadow: 0 0 20px rgba(255, 255, 255, 0.6); }
+.github-btn:hover { background: #e2e8f0; transform: translateY(-3px); box-shadow: 0 0 20px rgba(255, 255, 255, 0.5); }
