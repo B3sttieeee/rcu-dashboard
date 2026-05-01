@@ -1,68 +1,78 @@
 document.addEventListener("DOMContentLoaded", () => {
     const canvas = document.getElementById('space-canvas');
-    if (!canvas) return; // Zabezpieczenie przed błędem
+    if (!canvas) return;
     
     const ctx = canvas.getContext('2d');
-    let width, height, stars = [];
-    const numStars = 2000; // Ilość gwiazd w galaktyce
+    let width, height;
+    let stars = [];
+    const numStars = 800; // Ilość gwiazd 3D
 
-    function resizeCanvas() {
+    function resize() {
         width = window.innerWidth;
         height = window.innerHeight;
         canvas.width = width;
         canvas.height = height;
     }
 
-    function initStars() {
-        stars = [];
-        // Maksymalny zasięg gwiazd to przekątna ekranu
-        const maxRadius = Math.sqrt((width/2)**2 + (height/2)**2) * 1.2;
-        
-        for (let i = 0; i < numStars; i++) {
-            stars.push({
-                angle: Math.random() * Math.PI * 2,          // Pozycja na okręgu
-                distance: Math.random() * maxRadius,         // Odległość od centrum
-                size: Math.random() * 1.5 + 0.2,             // Wielkość kropki
-                speed: (Math.random() * 0.001) + 0.0005      // Prędkość obrotu wokół osi
-            });
+    class Star {
+        constructor() {
+            // Rozrzuć gwiazdy w przestrzeni X, Y, Z
+            this.x = (Math.random() - 0.5) * width * 2;
+            this.y = (Math.random() - 0.5) * height * 2;
+            this.z = Math.random() * width; // Oś Z odpowiada za głębię
+            
+            // Losuj kolor: Biały, jasnoniebieski, lekko złoty
+            const r = Math.random();
+            this.color = r > 0.8 ? '#ffcc00' : (r > 0.5 ? '#00ccff' : '#ffffff');
+        }
+
+        update() {
+            this.z -= 1.5; // Prędkość lotu w naszą stronę
+            
+            if (this.z <= 0) {
+                this.z = width;
+                this.x = (Math.random() - 0.5) * width * 2;
+                this.y = (Math.random() - 0.5) * height * 2;
+            }
+        }
+
+        draw() {
+            // Perspektywa (Rzutowanie 3D na 2D)
+            let sx = (this.x / this.z) * width + width / 2;
+            let sy = (this.y / this.z) * height + height / 2;
+            
+            // Gwiazda rośnie w miarę zbliżania się do ekranu
+            let r = (1 - this.z / width) * 2.5;
+
+            // Rysuj tylko, jeśli jest w kadrze
+            if (sx > 0 && sx < width && sy > 0 && sy < height) {
+                ctx.beginPath();
+                ctx.arc(sx, sy, r, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+            }
         }
     }
 
-    function animateGalaxy() {
-        // Półprzezroczyste czarne tło dla efektu rozmycia (smugi)
-        ctx.fillStyle = 'rgba(1, 1, 3, 0.3)';
+    function init() {
+        resize();
+        window.addEventListener('resize', resize);
+        for (let i = 0; i < numStars; i++) stars.push(new Star());
+        animate();
+    }
+
+    function animate() {
+        // Czyści płótno z efektem delikatnej smugi świetlnej za gwiazdą
+        ctx.fillStyle = 'rgba(1, 1, 3, 0.4)';
         ctx.fillRect(0, 0, width, height);
-        
-        const centerX = width / 2;
-        const centerY = height / 2;
-        
-        ctx.fillStyle = '#ffffff';
-        for (let star of stars) {
-            // Ruch obrotowy
-            star.angle += star.speed;
-            
-            // Lekkie zasysanie do środka (opcjonalny bajer)
-            // star.distance -= 0.1;
-            // if (star.distance < 50) star.distance = Math.sqrt((width/2)**2 + (height/2)**2);
 
-            const x = centerX + Math.cos(star.angle) * star.distance;
-            const y = centerY + Math.sin(star.angle) * star.distance;
-            
-            ctx.beginPath();
-            ctx.arc(x, y, star.size, 0, Math.PI * 2);
-            ctx.fill();
-        }
-        
-        requestAnimationFrame(animateGalaxy);
+        stars.forEach(star => {
+            star.update();
+            star.draw();
+        });
+
+        requestAnimationFrame(animate);
     }
 
-    // Uruchomienie
-    window.addEventListener('resize', () => {
-        resizeCanvas();
-        initStars();
-    });
-    
-    resizeCanvas();
-    initStars();
-    animateGalaxy();
+    init();
 });
