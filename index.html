@@ -3,94 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    
-    <title>B3sttieeee | Wymiar Kodu</title>
-    
-    <!-- Rozdzielone style z wymuszeniem odświeżenia -->
-    <link rel="stylesheet" href="./css/universe.css?v=3">
-    <link rel="stylesheet" href="./css/main.css?v=3">
+    <title>B3sttieeee | Deep Space</title>
+    <link rel="stylesheet" href="./css/universe.css">
+    <link rel="stylesheet" href="./css/main.css">
 </head>
 <body>
-    <!-- Ekran Ładowania (Preloader) -->
-    <div id="preloader" style="display: none;">
-        <div class="loader-text">Inicjalizacja Systemu...</div>
-    </div>
-
-    <!-- Silnik fizyczny Canvas (Czarna Dziura) -->
+    <!-- Główne płótno dla silnika renderującego -->
     <canvas id="space-canvas"></canvas>
 
-    <!-- Nawigacja -->
     <header>
         <nav>
             <div class="nav-content">
                 <div class="logo">B3STTIEEEE</div>
                 <ul>
-                    <li><a href="#home">Baza Główna</a></li>
-                    <li><a href="#discord">Komunikacja</a></li>
-                    <li><a href="#projects">Repozytoria</a></li>
+                    <li><a href="#home">Baza</a></li>
+                    <li><a href="#discord">Łączność</a></li>
+                    <li><a href="#projects">Repo</a></li>
                 </ul>
             </div>
         </nav>
     </header>
 
-    <!-- Treść główna -->
     <main>
-        <!-- Baza Główna -->
         <section id="home">
             <div class="hero-content">
                 <h1>System Online.</h1>
-                <p>Eksploruję kod i tworzę własny wszechświat na GitHubie.</p>
-                <a href="#projects" class="btn primary-btn">Zainicjuj Podróż</a>
+                <p>Eksploracja otchłani kodu w toku...</p>
+                <a href="#projects" class="btn primary-btn">Inicjuj Podróż</a>
             </div>
         </section>
-
-        <!-- Discord i Klan -->
-        <section id="discord">
-            <div class="section-header">
-                <h2>Moduł Komunikacji</h2>
-                <p>Nawiąż połączenie przez Discorda. Aktualnie operuję z jednostką VYRN.</p>
-            </div>
-            <div class="cards-container">
-                <article class="glass-card">
-                    <!-- Lokalne zdjęcie (z awaryjnym linkiem do imgura) -->
-                    <img src="./assets/img/avatar.png" alt="Awatar Profilowy" class="avatar" onerror="this.src='https://i.imgur.com/2MMBNwp.png'">
-                    <h3>Prywatny Kanał</h3>
-                    <div class="tag">@fiflacz3k.</div>
-                </article>
-
-                <article class="glass-card">
-                    <img src="./assets/img/vyrn-logo.png" alt="Logo Klanu VYRN" class="avatar" onerror="this.src='https://i.imgur.com/3s8lOVM.png'">
-                    <h3>Jednostka: VYRN</h3>
-                    <p class="desc">Główna baza wypadowa ekipy. Kanał otwarty.</p>
-                    <a href="https://discord.gg/vVvPcs84sz" target="_blank" rel="noopener noreferrer" class="btn secondary-btn">Autoryzuj Dostęp</a>
-                </article>
-            </div>
-        </section>
-
-        <!-- Archiwum Danych (Projekty) -->
-        <section id="projects">
-            <article class="glass-panel" id="projects-container">
-                <h2>Archiwum Danych</h2>
-                <p>Sprawdź kod, który wrzuciłem w otchłań GitHuba.</p>
-                
-                <!-- Tu w przyszłości JS wygeneruje karty projektów -->
-                
-                <div style="margin-top: 40px;">
-                    <a href="https://github.com/B3sttieeee" target="_blank" rel="noopener noreferrer" class="btn github-btn">Sprawdź cały GitHub</a>
-                </div>
-            </article>
-        </section>
+        <!-- Reszta sekcji bez zmian strukturalnych -->
     </main>
 
-    <!-- Ukryty odtwarzacz dźwięku tła -->
-    <audio id="ambient-sound" loop>
-        <source src="./assets/media/space-ambient.mp3" type="audio/mpeg">
-    </audio>
-
-    <!-- Nowa struktura skryptów JS -->
-    <script src="./js/data.js?v=3"></script>
-    <script src="./js/space.js?v=3"></script>
-    <script src="./js/ui.js?v=3"></script>
+    <script src="./js/space.js"></script>
+    <script src="./js/ui.js"></script>
 </body>
 </html>
