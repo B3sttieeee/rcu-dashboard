@@ -4,14 +4,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>B3sttieeee | Wymiar Kodu</title>
-    <!-- Zwykły, kuloodporny link do stylów -->
-    <link rel="stylesheet" href="css/style.css">
+    
+    <!-- Magiczny dopisek ?v=10 ominie pamięć podręczną przeglądarki! -->
+    <link rel="stylesheet" href="./css/style.css?v=10">
 </head>
 <body>
-    <!-- Silnik przestrzeni 3D -->
-    <canvas id="space-canvas"></canvas>
+    <!-- PERFEKCYJNY KOSMOS (TŁO) -->
+    <div class="universe-bg">
+        <!-- Wirujące Gwiazdy -->
+        <canvas id="space-canvas"></canvas>
+        
+        <!-- Mgławice -->
+        <div class="nebula nebula-1"></div>
+        <div class="nebula nebula-2"></div>
+        
+        <!-- Czarna Dziura (Gargantua 3D) -->
+        <div class="black-hole-wrapper">
+            <div class="accretion-disk"></div>
+            <div class="black-hole"></div>
+        </div>
+    </div>
 
-    <!-- Nawigacja główna -->
+    <!-- Nawigacja -->
     <header>
         <nav>
             <div class="nav-content">
@@ -19,49 +33,41 @@
                 <ul>
                     <li><a href="#home">Baza Główna</a></li>
                     <li><a href="#discord">Łączność</a></li>
-                    <li><a href="#projects">Horyzont Zdarzeń</a></li>
+                    <li><a href="#projects">Repozytoria</a></li>
                 </ul>
             </div>
         </nav>
     </header>
 
-    <!-- Zawartość strony -->
+    <!-- Treść Strony -->
     <main>
         <!-- Sekcja: Baza Główna -->
-        <section id="home" class="hero-section">
-            <div class="black-hole-container">
-                <div class="black-hole"></div>
-            </div>
+        <section id="home">
             <div class="hero-content">
                 <h1>System Online.</h1>
-                <p>Jestem programistą. Eksploruję kod i tworzę własny wszechświat.</p>
+                <p>Eksploruję kod i tworzę własny wszechświat na GitHubie.</p>
                 <a href="#projects" class="btn primary-btn">Zainicjuj Podróż</a>
             </div>
         </section>
 
-        <!-- Sekcja: Łączność (Discord/Klan) -->
+        <!-- Sekcja: Łączność -->
         <section id="discord">
             <div class="section-header">
                 <h2>Moduł Komunikacji</h2>
                 <p>Nawiąż połączenie przez Discorda. Aktualnie operuję z jednostką VYRN.</p>
             </div>
-            
             <div class="cards-container">
-                <!-- Karta: Discord -->
                 <article class="glass-card">
-                    <div class="card-glow"></div>
                     <img src="https://i.imgur.com/2MMBNwp.png" alt="Awatar Profilowy" class="avatar">
                     <h3>Prywatny Kanał</h3>
                     <div class="tag">@fiflacz3k.</div>
                 </article>
 
-                <!-- Karta: Klan -->
                 <article class="glass-card">
-                    <div class="card-glow"></div>
                     <img src="https://i.imgur.com/3s8lOVM.png" alt="Logo Klanu VYRN" class="avatar">
                     <h3>Jednostka: VYRN</h3>
-                    <p class="desc">Baza wypadowa naszej ekipy. Otwarty kanał wejściowy.</p>
-                    <a href="https://discord.gg/vVvPcs84sz" target="_blank" rel="noopener noreferrer" class="btn secondary-btn">Autoryzuj Dostęp</a>
+                    <p class="desc">Otwarty kanał wejściowy do bazy.</p>
+                    <a href="https://discord.gg/vVvPcs84sz" target="_blank" class="btn secondary-btn">Autoryzuj Dostęp</a>
                 </article>
             </div>
         </section>
@@ -69,16 +75,14 @@
         <!-- Sekcja: Projekty -->
         <section id="projects">
             <article class="glass-panel">
-                <h2>Archiwum Danych (GitHub)</h2>
-                <p>Zbiór moich repozytoriów. Sprawdź, nad czym aktualnie pracuję w otchłani kodu.</p>
-                <a href="https://github.com/B3sttieeee" target="_blank" rel="noopener noreferrer" class="btn github-btn">
-                    Dostęp do Repozytoriów
-                </a>
+                <h2>Archiwum Danych</h2>
+                <p>Zbiór moich repozytoriów. Sprawdź mój kod rzucony w otchłań.</p>
+                <a href="https://github.com/B3sttieeee" target="_blank" class="btn github-btn">Dostęp do GitHuba</a>
             </article>
         </section>
     </main>
 
-    <!-- Skrypt JS (gwiazdy) -->
-    <script src="js/space.js"></script>
+    <!-- Skrypt gwiazd -->
+    <script src="./js/space.js"></script>
 </body>
 </html>
