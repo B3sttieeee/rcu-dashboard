@@ -5,10 +5,26 @@ document.addEventListener("DOMContentLoaded", () => {
     
     let width, height;
     let particles = [];
-    const numParticles = 3500; // Liczba cząsteczek w dysku akrecyjnym
+    let backgroundStars = [];
     
-    const eventHorizonRadius = 100; // Wielkość czarnej dziury
-    const diskRadius = 400; // Rozmiar rozbłysku
+    // Ustawienia symulacji
+    const numParticles = 5000; // Zwiększona gęstość dysku akrecyjnego
+    const numStars = 500;      // Gwiazdy w tle
+    const eventHorizonRadius = 110; 
+    const diskRadius = 450; 
+    
+    // Zmienne do efektu paralaksy (reakcja na myszkę)
+    let mouseX = 0;
+    let mouseY = 0;
+    let targetX = 0;
+    let targetY = 0;
+
+    // Śledzenie ruchu myszki
+    window.addEventListener('mousemove', (e) => {
+        // Przekształcamy pozycję myszki na wartości od -1 do 1
+        mouseX = (e.clientX / window.innerWidth) * 2 - 1;
+        mouseY = (e.clientY / window.innerHeight) * 2 - 1;
+    });
 
     function resize() {
         width = window.innerWidth;
@@ -17,100 +33,152 @@ document.addEventListener("DOMContentLoaded", () => {
         canvas.height = height;
     }
 
-    // Klasa pojedynczej cząsteczki światła w dysku
+    // Gwiazdy w oddali
+    class BackgroundStar {
+        constructor() {
+            this.x = (Math.random() - 0.5) * width * 2;
+            this.y = (Math.random() - 0.5) * height * 2;
+            this.size = Math.random() * 1.5;
+            this.opacity = Math.random();
+            this.speedX = (Math.random() - 0.5) * 0.2;
+        }
+        update(parallaxX, parallaxY) {
+            // Reagują bardzo delikatnie na ruch kamery
+            this.drawX = this.x - parallaxX * 0.1;
+            this.drawY = this.y - parallaxY * 0.1;
+            this.x += this.speedX;
+        }
+        draw() {
+            ctx.globalAlpha = this.opacity;
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath();
+            ctx.arc(width/2 + this.drawX, height/2 + this.drawY, this.size, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.globalAlpha = 1.0; // Reset
+        }
+    }
+
+    // Cząsteczki dysku akrecyjnego wokół czarnej dziury
     class DiskParticle {
         constructor() {
             this.angle = Math.random() * Math.PI * 2;
-            // Większe zagęszczenie blisko horyzontu zdarzeń (symulacja grawitacji)
             const r = Math.pow(Math.random(), 2);
             this.distance = eventHorizonRadius + 5 + (r * diskRadius);
             
-            // Im bliżej dziury, tym szybciej wiruje
-            this.speed = 15 / Math.pow(this.distance, 1.3);
-            this.size = Math.random() * 1.5 + 0.5;
-            
-            // Kolor zależny od odległości: gorący biały/żółty blisko środka, fiolet/czerwień na zewnątrz
-            const intensity = 1 - (this.distance - eventHorizonRadius) / diskRadius;
-            if (intensity > 0.8) this.color = '#ffffff';
-            else if (intensity > 0.5) this.color = '#ffcc00';
-            else if (intensity > 0.2) this.color = '#ff3366';
-            else this.color = '#6600cc';
+            // Prędkość obrotowa (zgodna z prawami Keplera - im bliżej, tym szybciej)
+            this.baseSpeed = 20 / Math.pow(this.distance, 1.2);
+            this.size = Math.random() * 1.8 + 0.5;
         }
 
-        update() {
-            this.angle -= this.speed;
+        update(parallaxX, parallaxY) {
+            this.angle -= this.baseSpeed;
             
-            // Obliczanie pozycji X i Z (Z określa głębię obrazu)
-            this.x = Math.cos(this.angle) * this.distance;
-            this.z = Math.sin(this.angle) * this.distance;
+            // Wyliczanie fizycznej pozycji 3D
+            const rawX = Math.cos(this.angle) * this.distance;
+            const rawZ = Math.sin(this.angle) * this.distance;
+            const rawY = rawZ * 0.22; // Spłaszczenie (tilt) dysku
             
-            // Spłaszczenie osi Y, by uzyskać efekt pochylenia (tilted view)
-            this.y = this.z * 0.25; 
+            // Relatywistyczne Przesunięcie Dopplera (MAGIA)
+            // Cząsteczki "zbliżające się" do nas (Math.cos(this.angle) > 0) stają się jaśniejsze i bardziej niebieskie
+            // Cząsteczki "oddalające się" stają się ciemniejsze i bardziej czerwone
+            const direction = Math.cos(this.angle); // Od -1 do 1
+            const intensity = 1 - (this.distance - eventHorizonRadius) / diskRadius;
+            
+            if (direction > 0.3) {
+                // Zbiliżają się (Blueshift - gorące, jasne)
+                this.color = `rgba(200, 230, 255, ${intensity + 0.2})`;
+                this.glowColor = '#aaddff';
+            } else if (direction < -0.3) {
+                // Oddalają się (Redshift - ciemniejsze, fioletowo/czerwone)
+                this.color = `rgba(200, 50, 100, ${intensity - 0.2})`;
+                this.glowColor = '#cc0055';
+            } else {
+                // Neutralna strefa
+                this.color = `rgba(255, 200, 100, ${intensity})`;
+                this.glowColor = '#ffaa00';
+            }
+
+            // Aplikacja Paralaksy (reakcja na myszkę)
+            this.x = rawX - parallaxX * (0.5 + this.distance * 0.001);
+            this.y = rawY - parallaxY * (0.5 + this.distance * 0.001);
+            this.z = rawZ; // Ważne do sortowania głębi
         }
     }
 
     function init() {
         resize();
         window.addEventListener('resize', resize);
+        
         particles = [];
-        for (let i = 0; i < numParticles; i++) {
-            particles.push(new DiskParticle());
-        }
+        for (let i = 0; i < numParticles; i++) particles.push(new DiskParticle());
+        
+        backgroundStars = [];
+        for (let i = 0; i < numStars; i++) backgroundStars.push(new BackgroundStar());
+        
         animate();
     }
 
     function animate() {
-        // Tło kosmosu (lekkie zmazywanie zostawia płynne smugi świetlne)
-        ctx.fillStyle = 'rgba(5, 5, 8, 0.3)';
+        // Efekt rozmycia ruchu (Motion Blur)
+        ctx.fillStyle = 'rgba(2, 2, 4, 0.3)';
         ctx.fillRect(0, 0, width, height);
 
+        // Płynne podążanie kamery (interpolacja paralaksy)
+        targetX += (mouseX * 100 - targetX) * 0.05;
+        targetY += (mouseY * 100 - targetY) * 0.05;
+
         const centerX = width / 2;
-        const centerY = height / 2; // Możesz odjąć np. 100, żeby przesunąć dziurę wyżej
+        const centerY = height / 2 - 50; // Przesunięte lekko do góry
 
-        // 1. Aktualizacja cząsteczek
-        particles.forEach(p => p.update());
+        // 1. Rysuj tło
+        backgroundStars.forEach(star => {
+            star.update(targetX, targetY);
+            star.draw();
+        });
 
-        // 2. Sortowanie po osi Z! KRYTYCZNE DLA REALIZMU!
-        // Dzięki temu cząsteczki "z tyłu" (z < 0) rysują się pierwsze
+        // 2. Aktualizacja i sortowanie dysku akrecyjnego
+        particles.forEach(p => p.update(targetX, targetY));
         particles.sort((a, b) => a.z - b.z);
 
-        // 3. Rozdzielenie na tył i przód
         const backParticles = particles.filter(p => p.z < 0);
         const frontParticles = particles.filter(p => p.z >= 0);
 
-        // Rysowanie tyłu
+        // 3. Rysuj TYŁ dysku
         drawParticles(backParticles, centerX, centerY);
 
-        // 4. Rysowanie idealnie czarnego Horyzontu Zdarzeń oraz potężnej "poświaty" w tle
+        // 4. Rysuj HORYZONT ZDARZEŃ (Czarną kulę z paralaksą)
+        const bhDrawX = centerX - targetX * 0.3;
+        const bhDrawY = centerY - targetY * 0.3;
+
         ctx.save();
-        ctx.translate(centerX, centerY);
+        ctx.translate(bhDrawX, bhDrawY);
         
-        // Poświata grawitacyjna za kulą
-        const glow = ctx.createRadialGradient(0, 0, eventHorizonRadius * 0.8, 0, 0, eventHorizonRadius * 2);
+        // Zewnętrzna, asymetryczna poświata grawitacyjna (Doppler)
+        const glow = ctx.createRadialGradient(0, 0, eventHorizonRadius * 0.7, 0, 0, eventHorizonRadius * 2.5);
         glow.addColorStop(0, 'rgba(0,0,0,1)');
-        glow.addColorStop(0.5, 'rgba(138, 43, 226, 0.4)');
+        glow.addColorStop(0.3, 'rgba(138, 43, 226, 0.4)'); // Fioletowa baza
         glow.addColorStop(1, 'rgba(0,0,0,0)');
         ctx.fillStyle = glow;
         ctx.beginPath();
-        ctx.arc(0, 0, eventHorizonRadius * 2, 0, Math.PI * 2);
+        ctx.arc(0, 0, eventHorizonRadius * 2.5, 0, Math.PI * 2);
         ctx.fill();
 
-        // Absolutnie czarna sfera
+        // Absolutna pustka (Horyzont Zdarzeń)
         ctx.beginPath();
         ctx.arc(0, 0, eventHorizonRadius, 0, Math.PI * 2);
         ctx.fillStyle = '#000000';
         ctx.fill();
         
-        // Cienka świetlna obwódka "photon ring" (pierścień fotonowy) na krawędzi
+        // Pierścień fotonowy (cienka granica światła)
         ctx.beginPath();
-        ctx.arc(0, 0, eventHorizonRadius, 0, Math.PI * 2);
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
-        ctx.lineWidth = 2;
+        ctx.arc(0, 0, eventHorizonRadius + 1, 0, Math.PI * 2);
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+        ctx.lineWidth = 1.5;
         ctx.stroke();
         
         ctx.restore();
 
-        // 5. Rysowanie przodu (cząsteczki zakrywają czarną kulę)
+        // 5. Rysuj PRZÓD dysku (Zakrywa czarną kulę)
         drawParticles(frontParticles, centerX, centerY);
 
         requestAnimationFrame(animate);
@@ -119,15 +187,11 @@ document.addEventListener("DOMContentLoaded", () => {
     function drawParticles(particleArray, cx, cy) {
         particleArray.forEach(p => {
             ctx.beginPath();
+            // Przesunięcie pozycji rysowania o cel paralaksy by dysk zachował spójność
             ctx.arc(cx + p.x, cy + p.y, p.size, 0, Math.PI * 2);
             ctx.fillStyle = p.color;
-            // Dodanie rozmycia dla symulacji żarzącego się gazu
-            ctx.shadowBlur = 10;
-            ctx.shadowColor = p.color;
             ctx.fill();
         });
-        // Reset cieni dla wydajności
-        ctx.shadowBlur = 0; 
     }
 
     init();
