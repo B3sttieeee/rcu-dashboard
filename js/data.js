@@ -2,26 +2,29 @@
 const myProjects = [
     {
         title: "RCU Dashboard",
-        description: "Główny panel sterowania. Nowoczesny interfejs i zarządzanie danymi.",
+        description: "Główny panel sterowania. Nowoczesny interfejs i zarządzanie danymi w czasie rzeczywistym z wykorzystaniem zaawansowanych algorytmów.",
         techStack: ["HTML", "CSS", "JS"],
+        image: "./assets/img/rcu-preview.jpg", // Jak wrzucisz zdjęcie, system sam je zaciągnie
         githubLink: "https://github.com/B3sttieeee/rcu-dashboard",
         liveLink: "https://b3sttieeee.github.io/rcu-dashboard/"
     },
     {
-        title: "Projekt Alfa (Przykład)",
-        description: "Aplikacja do zarządzania czasem w przestrzeni kosmicznej.",
-        techStack: ["React", "Node.js"],
-        githubLink: "#",
+        title: "Kryptografia Wymiarowa",
+        description: "Skrypt do zabezpieczania transmisji danych pomiędzy modułami bazy. Narzędzie testowe symulujące podstawy szyfrowania.",
+        techStack: ["Python", "C++"],
+        image: "./assets/img/project-alpha.jpg",
+        githubLink: "https://github.com/B3sttieeee",
         liveLink: "#"
     },
     {
-        title: "Moduł Komunikacyjny",
-        description: "Skrypt automatyzujący wysyłanie wiadomości na Discordzie.",
-        techStack: ["Python", "Discord.py"],
-        githubLink: "#",
+        title: "Moduł VYRN",
+        description: "Zautomatyzowany bot zarządzający rolami, logami zdarzeń i powitaniami rekrutów na serwerze discordowym klanu.",
+        techStack: ["Node.js", "Discord.js"],
+        image: "./assets/img/vyrn-bot.jpg",
+        githubLink: "https://github.com/B3sttieeee",
         liveLink: "#"
     }
 ];
 
-// Funkcję do generowania kart z projektami napiszemy w kolejnym kroku!
-console.log("Moduł bazy danych zainicjowany. Liczba projektów:", myProjects.length);
+// Wyświetlamy kontrolnie w konsoli (F12), żeby wiedzieć, że baza działa poprawnie
+console.log("Moduł bazy danych załadowany. Liczba projektów w archiwum:", myProjects.length);
