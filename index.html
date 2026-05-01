@@ -3,34 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>B3sttieeee | Real Black Hole 3D</title>
+    <title>B3sttieeee | Deep Space Observation</title>
     <style>
+        /* --- STYLIZACJA INTERFEJSU (UI) --- */
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background: #000; color: #fff; font-family: 'Segoe UI', sans-serif; overflow: hidden; }
+        body { background: #000; color: #fff; font-family: 'Inter', 'Segoe UI', sans-serif; overflow: hidden; }
+        
         #canvas-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
         
-        /* UI */
-        nav { position: fixed; top: 0; width: 100%; padding: 25px; z-index: 100; display: flex; justify-content: center; }
-        .nav-content { display: flex; justify-content: space-between; width: 100%; max-width: 1200px; padding: 0 20px; align-items: center; }
-        .logo { font-weight: 900; letter-spacing: 4px; font-size: 1.2rem; background: linear-gradient(to right, #fff, #8a2be2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        /* Minimalistyczne Nav */
+        nav { 
+            position: fixed; top: 0; width: 100%; padding: 20px; z-index: 100; 
+            display: flex; justify-content: center; 
+            background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent);
+        }
+        .nav-content { display: flex; justify-content: space-between; width: 100%; max-width: 1400px; padding: 0 20px; align-items: center; }
+        .logo { font-weight: 900; letter-spacing: 5px; font-size: 1rem; color: #fff; opacity: 0.8; }
         nav ul { display: flex; list-style: none; gap: 30px; }
-        nav a { color: #fff; text-decoration: none; font-size: 11px; text-transform: uppercase; letter-spacing: 2px; opacity: 0.6; transition: 0.3s; }
-        nav a:hover { opacity: 1; text-shadow: 0 0 10px #fff; }
+        nav a { color: #fff; text-decoration: none; font-size: 10px; text-transform: uppercase; letter-spacing: 2px; opacity: 0.4; transition: 0.4s; }
+        nav a:hover { opacity: 1; }
 
-        main { position: relative; z-index: 10; width: 100%; height: 100vh; display: flex; align-items: center; justify-content: center; pointer-events: none; }
+        /* Przezroczyste UI na dole, aby nie zasłaniać centrum */
+        main { 
+            position: absolute; bottom: 5%; width: 100%; 
+            display: flex; justify-content: center; z-index: 10; pointer-events: none; 
+        }
         .hero-content { 
-            text-align: center; background: rgba(0,0,0,0.4); padding: 60px; border-radius: 40px; 
-            backdrop-filter: blur(20px); border: 1px solid rgba(138, 43, 226, 0.2); pointer-events: auto;
-            box-shadow: 0 0 50px rgba(0,0,0,0.5);
+            text-align: center; background: rgba(0,0,0,0.3); padding: 30px 60px; border-radius: 100px; 
+            backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.05); pointer-events: auto;
+            transition: 0.5s;
         }
-        h1 { font-size: 3.5rem; margin-bottom: 15px; font-weight: 900; letter-spacing: -2px; }
-        p { color: #8a8a8a; margin-bottom: 35px; font-size: 1.1rem; }
+        .hero-content:hover { background: rgba(0,0,0,0.5); border-color: rgba(255,165,0,0.2); }
+        
+        h1 { font-size: 1.5rem; margin-bottom: 5px; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; }
+        p { color: #666; margin-bottom: 20px; font-size: 0.8rem; letter-spacing: 1px; }
+        
         .btn { 
-            padding: 15px 45px; background: #fff; color: #000; text-decoration: none; 
-            border-radius: 50px; font-weight: 900; transition: 0.4s; display: inline-block;
-            text-transform: uppercase; letter-spacing: 1px;
+            padding: 10px 30px; background: transparent; color: #fff; text-decoration: none; 
+            border-radius: 50px; font-weight: 700; border: 1px solid #fff;
+            transition: 0.4s; display: inline-block; font-size: 0.7rem; text-transform: uppercase;
         }
-        .btn:hover { transform: scale(1.05); box-shadow: 0 0 30px rgba(138, 43, 226, 0.6); background: #8a2be2; color: #fff; }
+        .btn:hover { background: #fff; color: #000; box-shadow: 0 0 20px #fff; }
     </style>
 </head>
 <body>
@@ -50,90 +63,76 @@
 
     <main>
         <div class="hero-content">
-            <h1>SYSTEM ONLINE.</h1>
-            <p>Eksploracja horyzontu zdarzeń w toku...</p>
-            <a href="https://github.com/B3sttieeee" class="btn">Autoryzuj Dostęp</a>
+            <h1>System Online.</h1>
+            <p>Horyzont zdarzeń monitorowany stabilnie.</p>
+            <a href="https://github.com/B3sttieeee" class="btn">Archiwum Danych</a>
         </div>
     </main>
 
     <script type="module">
         import * as THREE from 'https://cdn.skypack.dev/three@0.132.2';
 
-        let scene, camera, renderer, disk, stars, holeGlow;
+        let scene, camera, renderer, disk, stars, suns = [];
 
-        function createTexture() {
-            // Tworzymy teksturę "rozmytej chmury" programowo
+        function createStarTexture(colorStr) {
             const canvas = document.createElement('canvas');
-            canvas.width = 64;
-            canvas.height = 64;
-            const context = canvas.getContext('2d');
-            const gradient = context.createRadialGradient(32, 32, 0, 32, 32, 32);
-            gradient.addColorStop(0, 'rgba(255,255,255,1)');
-            gradient.addColorStop(0.2, 'rgba(255,255,255,0.5)');
-            gradient.addColorStop(1, 'rgba(255,255,255,0)');
-            context.fillStyle = gradient;
-            context.fillRect(0, 0, 64, 64);
+            canvas.width = 128;
+            canvas.height = 128;
+            const ctx = canvas.getContext('2d');
+            const grad = ctx.createRadialGradient(64, 64, 0, 64, 64, 64);
+            grad.addColorStop(0, colorStr);
+            grad.addColorStop(0.2, colorStr);
+            grad.addColorStop(0.5, 'rgba(255,255,255,0.1)');
+            grad.addColorStop(1, 'rgba(0,0,0,0)');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, 128, 128);
             return new THREE.CanvasTexture(canvas);
         }
 
         function init() {
             scene = new THREE.Scene();
-            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 3000);
-            camera.position.set(0, 100, 500);
+            camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 10000);
+            camera.position.set(0, 200, 600);
 
             renderer = new THREE.WebGLRenderer({ antialias: true });
             renderer.setSize(window.innerWidth, window.innerHeight);
             renderer.setPixelRatio(window.devicePixelRatio);
             document.getElementById('canvas-container').appendChild(renderer.domElement);
 
-            // 1. CZARNA DZIURA (Shadow)
-            const bhGeo = new THREE.SphereGeometry(80, 64, 64);
+            // 1. CZARNA DZIURA
+            const bhGeo = new THREE.SphereGeometry(95, 64, 64);
             const bhMat = new THREE.MeshBasicMaterial({ color: 0x000000 });
             const blackHole = new THREE.Mesh(bhGeo, bhMat);
             scene.add(blackHole);
 
-            // Poświata wokół dziury (Atmosphere)
-            const glowGeo = new THREE.SphereGeometry(85, 64, 64);
-            const glowMat = new THREE.MeshBasicMaterial({ 
-                color: 0x8a2be2, 
-                transparent: true, 
-                opacity: 0.2,
-                side: THREE.BackSide 
-            });
-            holeGlow = new THREE.Mesh(glowGeo, glowMat);
-            scene.add(holeGlow);
-
-            // 2. DYSK AKRECYJNY (Gęsty gaz)
-            const particleCount = 25000; // Więcej cząsteczek
+            // 2. REALISTYCZNY DYSK AKRECYJNY (Prawdziwe kolory ognia/plazmy)
+            const count = 35000;
             const diskGeo = new THREE.BufferGeometry();
             const positions = [];
             const colors = [];
             const sizes = [];
             const color = new THREE.Color();
 
-            for (let i = 0; i < particleCount; i++) {
-                const r = Math.random() * 300 + 90;
+            for (let i = 0; i < count; i++) {
+                const r = Math.random() * 450 + 105;
                 const theta = Math.random() * Math.PI * 2;
                 
-                // Realistyczne wygięcie grawitacyjne
                 const x = r * Math.cos(theta);
                 const z = r * Math.sin(theta);
-                const y = (Math.sin(r * 0.015) * 50) * Math.cos(theta * 0.5) + (Math.random() - 0.5) * 10;
+                // Grawitacyjne wygięcie "Interstellar"
+                const y = (Math.sin(r * 0.01) * 60) * Math.cos(theta * 0.5) + (Math.random() - 0.5) * 8;
 
                 positions.push(x, y, z);
 
-                // Kolory: od żaru (pomarańcz) po ekstremalną energię (fiolet/błękit)
-                const distRatio = (r - 90) / 300;
-                if (distRatio < 0.2) {
-                    color.setHex(0xffffff); // Najgorętszy środek
-                } else if (distRatio < 0.6) {
-                    color.setHex(0xffaa00); // Pomarańczowy żar
-                } else {
-                    color.setHex(0x4b0082); // Chłodniejszy fiolet na brzegach
-                }
+                // Fizyczna gradacja temperatury plazmy
+                const dist = (r - 105) / 450;
+                if (dist < 0.1) color.setHex(0xffffff); // Biel (najgorętsze)
+                else if (dist < 0.4) color.setHex(0xffaa00); // Złoto
+                else if (dist < 0.7) color.setHex(0xff4400); // Pomarańcz
+                else color.setHex(0x330000); // Mroczna czerwień (stygnięcie)
                 
                 colors.push(color.r, color.g, color.b);
-                sizes.push(Math.random() * 5 + 2);
+                sizes.push(Math.random() * 6 + 2);
             }
 
             diskGeo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
@@ -141,11 +140,11 @@
             diskGeo.setAttribute('size', new THREE.Float32BufferAttribute(sizes, 1));
 
             const diskMat = new THREE.PointsMaterial({
-                size: 4,
-                map: createTexture(), // Używamy tekstury chmurki zamiast kropki
+                size: 3,
+                map: createStarTexture('rgba(255,255,255,0.8)'),
                 vertexColors: true,
                 transparent: true,
-                opacity: 0.6,
+                opacity: 0.7,
                 blending: THREE.AdditiveBlending,
                 depthWrite: false
             });
@@ -153,45 +152,67 @@
             disk = new THREE.Points(diskGeo, diskMat);
             scene.add(disk);
 
-            // 3. GWIAZDY
+            // 3. SYSTEM SŁOŃC (Gwiazdy typu Syriusz / Olbrzymy)
+            const sunConfigs = [
+                { color: 0x4488ff, size: 40, dist: 1500, name: 'Sirius' },  // Błękitny olbrzym
+                { color: 0xff3300, size: 70, dist: 2500, name: 'Betelgeuse' }, // Czerwony nadolbrzym
+                { color: 0xffffff, size: 15, dist: 1200, name: 'White Dwarf' } // Biały karzeł
+            ];
+
+            sunConfigs.forEach(config => {
+                const spriteMat = new THREE.SpriteMaterial({
+                    map: createStarTexture(config.color === 0xffffff ? 'rgba(255,255,255,1)' : 'rgba(255,100,50,0.8)'),
+                    color: config.color,
+                    blending: THREE.AdditiveBlending,
+                    transparent: true
+                });
+                const sprite = new THREE.Sprite(spriteMat);
+                const angle = Math.random() * Math.PI * 2;
+                sprite.position.set(Math.cos(angle)*config.dist, (Math.random()-0.5)*500, Math.sin(angle)*config.dist);
+                sprite.scale.set(config.size, config.size, 1);
+                scene.add(sprite);
+                suns.push(sprite);
+            });
+
+            // 4. GWIAZDY TŁA
             const sGeo = new THREE.BufferGeometry();
             const sPos = [];
-            for (let i = 0; i < 7000; i++) {
-                sPos.push((Math.random() - 0.5) * 3000, (Math.random() - 0.5) * 3000, (Math.random() - 0.5) * 3000);
+            for (let i = 0; i < 10000; i++) {
+                sPos.push((Math.random() - 0.5) * 8000, (Math.random() - 0.5) * 8000, (Math.random() - 0.5) * 8000);
             }
             sGeo.setAttribute('position', new THREE.Float32BufferAttribute(sPos, 3));
-            stars = new THREE.Points(sGeo, new THREE.PointsMaterial({ color: 0xffffff, size: 1.2, transparent: true, opacity: 0.8 }));
+            stars = new THREE.Points(sGeo, new THREE.PointsMaterial({ color: 0xffffff, size: 1, transparent: true, opacity: 0.5 }));
             scene.add(stars);
 
             animate();
         }
 
+        let targetX = 0, targetY = 0;
+        window.addEventListener('mousemove', (e) => {
+            targetX = (e.clientX - window.innerWidth / 2) * 0.15;
+            targetY = (e.clientY - window.innerHeight / 2) * 0.15;
+        });
+
         function animate() {
             requestAnimationFrame(animate);
-            
-            const time = Date.now() * 0.001;
-            
-            disk.rotation.y += 0.003;
-            disk.rotation.z = Math.sin(time * 0.2) * 0.1; // Delikatne falowanie całego dysku
-            
-            holeGlow.scale.setScalar(1 + Math.sin(time * 2) * 0.05); // Pulsowanie dziury
-            
+            const time = Date.now() * 0.0005;
+
+            disk.rotation.y += 0.004;
             stars.rotation.y -= 0.0001;
-            
-            // Kamera
+
+            // Efekt pulsowania "słońc"
+            suns.forEach((sun, i) => {
+                const s = 1 + Math.sin(time + i) * 0.2;
+                sun.scale.set(s * 30, s * 30, 1);
+            });
+
+            // Kamera podąża za myszką
             camera.position.x += (targetX - camera.position.x) * 0.05;
-            camera.position.y += (-targetY - camera.position.y) * 0.05;
+            camera.position.y += (-targetY + 200 - camera.position.y) * 0.05;
             camera.lookAt(0, 0, 0);
 
             renderer.render(scene, camera);
         }
-
-        // Interakcja myszką
-        let targetX = 0, targetY = 0;
-        window.addEventListener('mousemove', (e) => {
-            targetX = (e.clientX - window.innerWidth / 2) * 0.5;
-            targetY = (e.clientY - window.innerHeight / 2) * 0.5;
-        });
 
         window.addEventListener('resize', () => {
             camera.aspect = window.innerWidth / window.innerHeight;
